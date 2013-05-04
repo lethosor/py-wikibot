@@ -1,4 +1,5 @@
 py-wikibot
 ==========
 
-MediaWiki framework in Python
+MediaWiki bot framework in Python
+
