@@ -1,0 +1,5 @@
+"""
+Python MediaWiki bot framework
+
+"""
+
