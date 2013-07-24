@@ -17,7 +17,9 @@ else:
     util.die('Unsupported python version:', util.py_version)
 
 class Request:
-    def __init__(self, url, data={}, method="GET", auto=True, async=False, callback=None):
+    def __init__(self, url, data=False, method="GET", auto=True, async=False, callback=None):
+        if not data:
+            data = {}
         purl = urlparse.urlparse(url)  # Parsed URL
         if purl.query:
             data.update(util.qs_decode(purl.query.lstrip('?')))
