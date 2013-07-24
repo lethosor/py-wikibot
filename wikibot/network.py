@@ -2,6 +2,7 @@
 Network connections
 """
 
+import multiprocessing
 import sys
 
 import util
@@ -24,14 +25,31 @@ class Request:
         
         self.async, self.callback = async, callback
         
+        if async and callback is None:
+            raise TypeError('Asynchronous requests require a callback!')
+        
         if auto:
             self.request()
     
     def request(self):
         self.conn = httplib.HTTPConnection(self.host, self.port)
+        if not self.async:
+            self.fetch()
+        else:
+            # Fetch the request asynchronously
+            def fetch(*args):
+                util.log("Fetching")
+                self.fetch()
+            p = multiprocessing.Pool(1)
+            r = p.apply_async(fetch, [1], self.callback)
         
     def fetch(self):
         self.conn.request(self.method, self.path)
-        return self.conn.getresponse()
+        self.response = self.conn.getresponse()
+        self.response_text = self.response.read()
+        # Callback
+        if hasattr(self.callback, '__call__'):
+            self.callback(self)
+        
     
 
