@@ -16,3 +16,6 @@ def die(*args):
     log(*args)
     sys.exit()
 
+def dict_extend(d1, d2):
+    return dict(d1, **d2)
+
