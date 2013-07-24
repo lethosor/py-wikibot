@@ -19,9 +19,13 @@ else:
 class Request:
     def __init__(self, url, data={}, method="GET", auto=True, async=False, callback=None):
         purl = urlparse.urlparse(url)  # Parsed URL
+        if purl.query:
+            data.update(util.qs_decode(purl.query.lstrip('?')))
+        
+        query = util.qs_encode(data)
         
         self.host, self.port, self.path, self.data, self.method = \
-            purl.hostname, purl.port, purl.path, data, method
+            purl.hostname, purl.port, purl.path + '?' + query, data, method
         
         self.async, self.callback = async, callback
         
@@ -50,6 +54,7 @@ class Request:
         # Callback
         if hasattr(self.callback, '__call__'):
             self.callback(self)
+    
         
     
 

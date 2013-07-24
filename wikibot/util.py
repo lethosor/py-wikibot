@@ -19,3 +19,18 @@ def die(*args):
 def dict_extend(d1, d2):
     return dict(d1, **d2)
 
+def qs_decode(s):
+    d = {}
+    a = s.split('&')
+    for i in a:
+        b = i.split('=',1)
+        d[b[0]] = b[1]
+    return d
+    
+def qs_encode(d):
+    data_string = ''
+    for i in d:
+        data_string += "&%s=%s" % (i, d[i])
+    
+    data_string = data_string[1:]
+    return data_string

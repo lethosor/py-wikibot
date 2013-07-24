@@ -2,6 +2,8 @@
 Interface for the MediaWiki API
 """
 
+import json
+
 # wikibot
 import network
 import util
@@ -22,16 +24,20 @@ class API:
         """
         Perform network initialization
         """
-        pass
+        self.request({'meta':'siteinfo', 'siprop':'namespaces'})
     
     def request(self, *args, **kwargs):
-        return APIRequest(self, *args, **kwargs)
+        r = APIRequest(self, *args, **kwargs)
+        if hasattr(r, 'result'):
+            return r.result
+        else:
+            return r
     
 
 
 class APIRequest:
     def __init__(self, api, data={}, method='auto', auto=True):
-        data = util.dict_extend({'format':'json'}, data)
+        data = util.dict_extend({'format':'json', 'action':'query'}, data)
         
         self.api, self.data, self.method = api, data, method
         
@@ -45,6 +51,11 @@ class APIRequest:
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         print self.url_string
+        self.req = req = network.Request(self.url_string)
+        result = req.response_text
+        print result
+        self.result = json.loads(result)
+        return self.result
     
     @property
     def url_string(self):
