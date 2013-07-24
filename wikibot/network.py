@@ -2,17 +2,18 @@
 Network connections
 """
 
-try:
-    # Python 3
-    import http.client as httplib
-except ImportError:
-    import httplib
+import sys
 
-try:
-    # Python 3
-    import urllib.parse as urlparse
-except ImportError:
+import util
+
+if util.py_version == 2:
+    import httplib
     import urlparse
+elif util.py_version == 3:
+    import http.client as httplib
+    import urllib.parse as urlparse
+else:
+    util.die('Unsupported python version:', util.py_version)
 
 class Request:
     def __init__(self, url, data={}, method="GET", auto=True, async=False, callback=None):
@@ -30,6 +31,7 @@ class Request:
         self.conn = httplib.HTTPConnection(self.host, self.port)
         
     def fetch(self):
-        pass
+        self.conn.request(self.method, self.path)
+        return self.conn.getresponse()
     
 
