@@ -50,10 +50,8 @@ class APIRequest:
             self.method = 'GET'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
-        print self.url_string
         self.req = req = network.Request(self.url_string)
         result = req.response_text
-        print result
         self.result = json.loads(result)
         return self.result
     
