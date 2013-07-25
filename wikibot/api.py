@@ -3,6 +3,7 @@ Interface for the MediaWiki API
 """
 
 import json
+import pickle
 
 # wikibot
 import network
@@ -17,6 +18,9 @@ class API:
             url = url[:-1]
         url += "/api.php"
         self.url = url
+        
+        self.mw_data = {}
+        
         if auto:
             self.init()
     
@@ -24,7 +28,7 @@ class API:
         """
         Perform network initialization
         """
-        self.request({'meta':'siteinfo', 'siprop':'namespaces'})
+        self.mw_data['ns'] = self.request({'meta':'siteinfo', 'siprop':'namespaces'}, filters=['namespaces'])
     
     def request(self, *args, **kwargs):
         r = APIRequest(self, *args, **kwargs)
@@ -33,13 +37,23 @@ class API:
         else:
             return r
     
+    def save(self, outfile):
+        data = (self.url, self.mw_data)
+        pickle.dump(data, outfile)
+    
+    def load(self, infile):
+        data = pickle.load(infile)
+        self.url, self.mw_data = data
+    
 
 
 class APIRequest:
-    def __init__(self, api, data={}, method='auto', auto=True):
+    def __init__(self, api, data={}, method='auto', auto=True, default_filters=['query'], filters=[]):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
         
-        self.api, self.data, self.method = api, data, method
+        filters.extend(default_filters)
+        
+        self.api, self.data, self.method, self.filters = api, data, method, filters
         
         if auto:
             self.request()
@@ -52,8 +66,27 @@ class APIRequest:
             raise ValueError('Method must be GET/POST')
         self.req = req = network.Request(self.url_string)
         result = req.response_text
-        self.result = json.loads(result)
+        if self.data['format'] == 'json':
+            self.result = self.appiy_filters(json.loads(result))
+        else:
+            self.result = result
         return self.result
+    
+    def appiy_filters(self, obj):
+        def sub(obj):
+            found = False
+            for i in self.filters:
+                if i in obj:
+                    found = True
+                    obj = obj[i]
+            return (found, obj)
+        
+        c = True
+        while c:
+            c, obj = sub(obj)
+        
+        return obj
+    
     
     @property
     def url_string(self):
