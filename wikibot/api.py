@@ -10,7 +10,15 @@ import network
 import util
 
 class API:
-    def __init__(self, url, auto=True):
+    def __init__(self, url='', auto=True, save_file=None):
+        
+        self.mw_data = {}
+        self.info = {}  # Shortcuts for commonly-used items in mw_data
+        
+        # Load a saved file
+        if save_file is not None and hasattr(save_file, 'read'):
+            self.init_from_file(save_file)
+            return
         # Set up API url
         if url.endswith('.php'):
             url = url.rsplit('/', 1)[0]
@@ -19,16 +27,21 @@ class API:
         url += "/api.php"
         self.url = url
         
-        self.mw_data = {}
-        
         if auto:
             self.init()
+    
+    def init_from_file(self, f):
+        self.load(f)
+        self.info = {}
     
     def init(self):
         """
         Perform network initialization
         """
-        self.mw_data['ns'] = self.request({'meta':'siteinfo', 'siprop':'namespaces'}, filters=['namespaces'])
+        self.mw_data.update(self.request({
+            'meta':'siteinfo',
+            'siprop':'general|namespaces|namespacealiases|statistics'
+        }))
     
     def request(self, *args, **kwargs):
         r = APIRequest(self, *args, **kwargs)
