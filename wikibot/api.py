@@ -80,7 +80,7 @@ class APIRequest:
                 self.method = 'POST'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
-        self.req = req = network.Request(self.url_string)
+        self.req = req = network.Request(self.url_string, method=self.method)
         result = req.response_text
         if self.data['format'] == 'json':
             self.result = self.apply_filters(json.loads(result))
