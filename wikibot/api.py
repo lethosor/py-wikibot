@@ -9,6 +9,17 @@ import pickle
 import network
 import util
 
+class Site:
+    def __init__(self, url):
+        if url.endswith('.php'):
+            url = url.rsplit('/', 1)[0]
+        if url.endswith('/'):
+            url = url[:-1]
+        url += "/api.php"
+        self.url = url
+    
+
+
 class API:
     def __init__(self, url='', auto=True, save_file=None):
         
@@ -20,12 +31,7 @@ class API:
             self.init_from_file(save_file)
             return
         # Set up API url
-        if url.endswith('.php'):
-            url = url.rsplit('/', 1)[0]
-        if url.endswith('/'):
-            url = url[:-1]
-        url += "/api.php"
-        self.url = url
+        self.url = Site(url).url
         
         if auto:
             self.init()
