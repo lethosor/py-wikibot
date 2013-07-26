@@ -74,7 +74,10 @@ class APIRequest:
     def request(self):
         self.method = self.method.upper()
         if self.method == 'AUTO':
-            self.method = 'GET'
+            if self.data['action'] == 'query':
+                self.method = 'GET'
+            else:
+                self.method = 'POST'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         self.req = req = network.Request(self.url_string)

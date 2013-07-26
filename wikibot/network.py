@@ -17,7 +17,7 @@ else:
     util.die('Unsupported python version:', util.py_version)
 
 class Request:
-    def __init__(self, url, data=False, method="POST", headers=False, auto=True, async=False, callback=None):
+    def __init__(self, url, data=False, method="GET", headers=False, auto=True, async=False, callback=None):
         if not data:
             data = {}
         if not headers:
