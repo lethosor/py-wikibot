@@ -44,11 +44,16 @@ class API:
         }))
     
     def request(self, *args, **kwargs):
+        ret = 'value'
+        if 'ret' in kwargs:
+            ret = kwargs['ret']
+            del kwargs['ret']
         r = APIRequest(self, *args, **kwargs)
-        if hasattr(r, 'result'):
+        if ret=='value':
+            return r.result.value
+        elif ret=='result':
             return r.result
-        else:
-            return r
+        return r
     
     def save(self, outfile):
         data = (self.url, self.mw_data)
@@ -81,11 +86,7 @@ class APIRequest:
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         self.req = req = network.Request(self.url_string, method=self.method)
-        result = req.response_text
-        if self.data['format'] == 'json':
-            self.result = self.apply_filters(json.loads(result))
-        else:
-            self.result = result
+        self.result = result = APIResult(req, self.data)
         return self.result
     
     def apply_filters(self, obj):
@@ -113,5 +114,12 @@ class APIRequest:
         data_string = data_string[1:]
         return "%s?%s" % (self.api.url, data_string)
         
+
+class APIResult:
+    def __init__(self, request, data):
+        self.response = request.response_text
+        self.value = self.response
+        if 'format' in data and data['format'] == 'json':
+            self.value = json.loads(self.response)
     
 
