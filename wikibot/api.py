@@ -80,12 +80,12 @@ class APIRequest:
         self.req = req = network.Request(self.url_string)
         result = req.response_text
         if self.data['format'] == 'json':
-            self.result = self.appiy_filters(json.loads(result))
+            self.result = self.apply_filters(json.loads(result))
         else:
             self.result = result
         return self.result
     
-    def appiy_filters(self, obj):
+    def apply_filters(self, obj):
         def sub(obj):
             found = False
             for i in self.filters:
