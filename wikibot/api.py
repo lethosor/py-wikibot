@@ -105,7 +105,7 @@ class APIRequest:
                 self.method = 'POST'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
-        self.req = req = network.Request(self.url_string, method=self.method, headers=self.headers)
+        self.req = req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
         self.result = result = APIResult(self, req, self.data)
         return self.result
     
@@ -124,16 +124,6 @@ class APIRequest:
         
         return obj
     
-    
-    @property
-    def url_string(self):
-        data_string = ''
-        for i in self.data:
-            data_string += "&%s=%s" % (i, self.data[i])
-        
-        data_string = data_string[1:]
-        return "%s?%s" % (self.api.url, data_string)
-        
 
 class APIResult:
     def __init__(self, api_request, request, data):
