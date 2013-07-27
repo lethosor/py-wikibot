@@ -75,12 +75,11 @@ class API:
 
 
 class APIRequest:
-    def __init__(self, api, data={}, method='auto', auto=True, default_filters=['query'], filters=[], headers=None):
+    def __init__(self, api, data={}, method='auto', auto=True, auto_filter=True, headers=None):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
-        
-        filters.extend(default_filters)
-        
-        self.api, self.data, self.method, self.filters, self.headers = api, data, method, filters, headers
+           
+        self.api, self.data, self.method, self.enable_auto_filter, self.headers = \
+            api, data, method, auto_filter, headers
         
         if auto:
             self.request()
@@ -98,18 +97,18 @@ class APIRequest:
         self.result = result = APIResult(self, req, self.data)
         return self.result
     
-    def apply_filters(self, obj):
-        def sub(obj):
-            found = False
-            for i in self.filters:
-                if i in obj:
-                    found = True
-                    obj = obj[i]
-            return (found, obj)
-        
-        c = True
-        while c:
-            c, obj = sub(obj)
+    def auto_filter(self, obj):
+        while True:
+            try:
+                if len(obj.keys()) > 1:
+                    break
+                if isinstance(obj[obj.keys()[0]], dict):
+                    obj = obj[obj.keys()[0]]
+                else:
+                    break
+            except AttributeError:
+                # Single remaining object is not a dict
+                break
         
         return obj
     
@@ -131,6 +130,7 @@ class APIResult:
         self.headers = request.response.getheaders()
         if 'format' in data and data['format'] == 'json':
             self.value = json.loads(self.response)
-            self.value = api_request.apply_filters(self.value)
+            if api_request.enable_auto_filter:
+                self.value = api_request.auto_filter(self.value)
     
 

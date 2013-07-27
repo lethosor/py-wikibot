@@ -81,29 +81,31 @@ class Request:
 class CookieManager:
     def __init__(self):
         self.cookies = {}
+        self.get = self.__getitem__
+        self.set = self.__setitem__
     
     def __getitem__(self, key):
         if key in self.cookies:
             return self.cookies[key]
         else:
             raise KeyError('No cookie found with name "%s"' & key)
-    # __getattr__ = __getitem__
     
     def __setitem__(self, key, val):
         self.cookies[key] = val
         return val
-    # __setattr__ = __setitem__
     
     def get_headers(self):
         """
-        Returns a list of headers for generating cookies, suitable for httplib
-        requests.
-        List format: [('Cookie', 'name=value')...]
+        Returns a list containing a Cookie header for sending cookies, suitable
+        for httplib requests (the list makes appending other headers easier).
+        List format: [('Cookie', 'name=value; name=value ...')]
+        The Cookie header can be created with:
+        ': '.join(get_headers()[0])
         """
         l = []
         for i in self.cookies:
-            l.append(('Cookie', "%s=%s" % (i, self.cookies[i])))
-        return l
+            l.append("%s=%s" % (i, self.cookies[i]))
+        return [("Cookie", "; ".join(l))]
     
 
     def set_from_headers(self, l):
