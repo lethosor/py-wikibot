@@ -11,6 +11,9 @@ import util
 
 class Site:
     def __init__(self, url):
+        if isinstance(url, self.__class__):
+            # Allow passing a Site instance
+            url = url.url
         if url.endswith('.php'):
             url = url.rsplit('/', 1)[0]
         if url.endswith('/'):
