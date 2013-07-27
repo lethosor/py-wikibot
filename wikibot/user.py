@@ -26,19 +26,18 @@ class User:
             self.login()
     
     def login(self, username='', password=''):
-        req_1 = self.api.request({
+        req_1 = self.api_request({
             'action': 'login',
             'lgname': self.username,
             'lgpassword': self.password
         }, ret='request', filters=['login'])
-        self.cookies.set_from_headers(req_1.result.headers)
         val_1 = req_1.result.value
-        req_2 = self.api.request({
+        req_2 = self.api_request({
             'action': 'login',
             'lgname': self.username,
             'lgpassword': self.password,
             'lgtoken': val_1['token']
-        }, ret='request', filters=['login'], headers=self.cookies.get_headers())
+        }, ret='request', filters=['login'])
         val_2 = req_2.result.value
         if val_2['result'] == 'Success':
             util.log("Login as %s successful" % self.username)
@@ -52,6 +51,17 @@ class User:
             kwargs['headers'].extend(cookie_headers)
         else:
             kwargs['headers'] = cookie_headers
-        return self.api.request(*args, **kwargs)
+        old_ret = 'value'
+        if 'ret' in kwargs:
+            old_ret = kwargs['ret']
+        kwargs['ret'] = 'request'
+        req = self.api.request(*args, **kwargs)
+        self.cookies.set_from_headers(req.result.headers)
+        if old_ret == 'value':
+            return req.result.value
+        elif old_ret == 'result':
+            return req.result
+        return req
+        
     
 
