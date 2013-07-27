@@ -77,6 +77,51 @@ class Request:
         if hasattr(self.callback, '__call__'):
             self.callback(self)
     
+    
+class CookieManager:
+    def __init__(self):
+        self.cookies = {}
+    
+    def __getitem__(self, key):
+        if key in self.cookies:
+            return self.cookies[key]
+        else:
+            raise KeyError('No cookie found with name "%s"' & key)
+    # __getattr__ = __getitem__
+    
+    def __setitem__(self, key, val):
+        self.cookies[key] = val
+        return val
+    # __setattr__ = __setitem__
+    
+    def get_headers(self):
+        """
+        Returns a list of headers for generating cookies, suitable for httplib
+        requests.
+        List format: [('Cookie', 'name=value')...]
+        """
+        l = []
+        for i in self.cookies:
+            l.append(('Cookie', "%s=%s" % (i, self.cookies[i])))
+        return l
+    
+
+    def set_from_headers(self, l):
+        """
+        Sets cookies using all set-cookie headers in the given list.
+        Other headers are ignored.
+        List format: [('set-cookie', 'cookie data')...] (not case-sensitive)
+        """
         
+        for i in l:
+            header, data = i
+            if header.lower() != 'set-cookie':
+                continue
+            cookie_name, cookie_value = data.split(';')[0].split('=', 1)
+            self.cookies[cookie_name] = cookie_value
+        
+        
+    
+    
     
 

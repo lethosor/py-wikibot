@@ -75,12 +75,12 @@ class API:
 
 
 class APIRequest:
-    def __init__(self, api, data={}, method='auto', auto=True, default_filters=['query'], filters=[]):
+    def __init__(self, api, data={}, method='auto', auto=True, default_filters=['query'], filters=[], headers=None):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
         
         filters.extend(default_filters)
         
-        self.api, self.data, self.method, self.filters = api, data, method, filters
+        self.api, self.data, self.method, self.filters, self.headers = api, data, method, filters, headers
         
         if auto:
             self.request()
@@ -94,7 +94,7 @@ class APIRequest:
                 self.method = 'POST'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
-        self.req = req = network.Request(self.url_string, method=self.method)
+        self.req = req = network.Request(self.url_string, method=self.method, headers=self.headers)
         self.result = result = APIResult(self, req, self.data)
         return self.result
     
@@ -128,6 +128,7 @@ class APIResult:
     def __init__(self, api_request, request, data):
         self.response = request.response_text
         self.value = self.response
+        self.headers = request.response.getheaders()
         if 'format' in data and data['format'] == 'json':
             self.value = json.loads(self.response)
             self.value = api_request.apply_filters(self.value)
