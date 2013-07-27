@@ -71,6 +71,9 @@ class User:
         if auto_init:
             self.init()
     
+    def logout(self):
+        self.api_request({'action':'logout'})
+    
     def init(self):
         try:
             self.edit_token = self.api_request({

@@ -21,6 +21,18 @@ class Site:
         url += "/api.php"
         self.url = url
     
+class Page:
+    def __init__(self, title='', user=None, auto_load=True):
+        self.title = title
+        if user is None or not hasattr(user, 'api'):
+            raise TypeError("Must have a valid user!")
+        if auto_load:
+            self.load()
+    
+    def load(self):
+        pass
+    
+    
 
 
 class API:

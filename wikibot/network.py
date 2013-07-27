@@ -70,6 +70,7 @@ class Request:
             except TypeError, ValueError:
                 pass
         self.conn.endheaders()
+        print self.post_data
         self.conn.send(self.post_data)
         self.response = self.conn.getresponse()
         self.response_text = self.response.read()
