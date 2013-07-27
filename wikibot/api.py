@@ -95,7 +95,7 @@ class APIRequest:
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         self.req = req = network.Request(self.url_string, method=self.method)
-        self.result = result = APIResult(req, self.data)
+        self.result = result = APIResult(self, req, self.data)
         return self.result
     
     def apply_filters(self, obj):
@@ -125,10 +125,11 @@ class APIRequest:
         
 
 class APIResult:
-    def __init__(self, request, data):
+    def __init__(self, api_request, request, data):
         self.response = request.response_text
         self.value = self.response
         if 'format' in data and data['format'] == 'json':
             self.value = json.loads(self.response)
+            self.value = api_request.apply_filters(self.value)
     
 
