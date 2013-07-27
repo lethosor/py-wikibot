@@ -6,6 +6,7 @@ Utilities
 from __future__ import print_function
 
 import sys
+import urllib
 
 py_version = int(sys.version.split()[0].split('.')[0])
 
@@ -24,13 +25,13 @@ def qs_decode(s):
     a = s.split('&')
     for i in a:
         b = i.split('=',1)
-        d[b[0]] = b[1]
+        d[urllib.unquote(b[0])] = urllib.unquote(b[1])
     return d
     
 def qs_encode(d):
     data_string = ''
     for i in d:
-        data_string += "&%s=%s" % (i, d[i])
+        data_string += "&%s=%s" % (urllib.quote(i), urllib.quote(d[i]))
     
     data_string = data_string[1:]
     return data_string

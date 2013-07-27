@@ -49,7 +49,7 @@ class Request:
             self.path += '?' + query
         else:
             raise ValueError('Invalid method: "%s"' % self.method)
-        
+
         if not self.async:
             self.fetch()
         else:
