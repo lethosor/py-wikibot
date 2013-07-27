@@ -44,6 +44,7 @@ class User:
             util.log("Login as %s successful" % self.username)
         else:
             util.log("Login as %s failed: %s" % (self.username, val_2['result']))
+            return False
     
     def api_request(self, *args, **kwargs):
         cookie_headers = self.cookies.get_headers()
