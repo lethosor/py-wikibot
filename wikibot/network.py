@@ -2,6 +2,8 @@
 Network connections
 """
 
+__metaclass__ = type
+
 import multiprocessing
 import sys
 

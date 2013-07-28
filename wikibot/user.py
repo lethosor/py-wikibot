@@ -2,6 +2,8 @@
 Users
 """
 
+__metaclass__ = type
+
 import api
 import network
 import util
