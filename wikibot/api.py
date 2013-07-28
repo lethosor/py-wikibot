@@ -31,15 +31,33 @@ class Page:
             self.load()
     
     def load(self):
-        result = self.user.api_request({
+        self.result = result = self.user.api_request({
             'titles': self.title,
             'indexpageids': 1,
             'prop': 'revisions',
             'rvprop': 'content',
             'rvlimit': 1
-        })
-        text = result['query']['pages'][result['query']['pageids'][0]]['revisions'][0]['*']
+        }, auto_filter=False)
+        page_id = int(result['query']['pageids'][0])
+        if page_id > 0:
+            self.exists = True
+            text = result['query']['pages'][result['query']['pageids'][0]]['revisions'][0]['*']
+        else:
+            # Page does not exist (negative ID)
+            self.exists = False
+            text = ''
         self.text = text
+    
+    def save(self, summary='', minor=0, bot=0):
+        result = self.user.api_request({
+            'action': 'edit',
+            'title': self.title,
+            'text': self.text,
+            'summary': summary,
+            'minor': minor,
+            'bot': bot,
+            'token': self.user.edit_token
+        })
     
     
 

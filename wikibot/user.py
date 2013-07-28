@@ -43,6 +43,7 @@ class User:
         if username and password and auto_login:
             self.login()
     
+    
     def login(self, username='', password='', auto_init=True):
         req_1 = self.api_request({
             'action': 'login',
