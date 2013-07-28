@@ -53,11 +53,11 @@ class Page:
         if isinstance(items, str):
             items = [items]
         for i in items:
-            i = "fetch_" + i
-            if hasattr(self, i):
-                func = getattr(self, i)
+            f = "fetch_" + i
+            if hasattr(self, f):
+                func = getattr(self, f)
                 if hasattr(func, '__call__'):
-                    func()
+                    self.data[i] = func()
         
     
     def fetch_raw(self):
@@ -76,11 +76,10 @@ class Page:
             # Page does not exist (negative ID)
             self.exists = False
             text = ''
-        self.data['raw'] = {
+        return {
             'result': result,
             'text': text
         }
-        return self.data['raw']
     
     
     def save(self, summary='', minor=0, bot=0):
