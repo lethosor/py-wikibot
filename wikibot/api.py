@@ -88,15 +88,18 @@ class Page:
             text = self.data['raw']['text']
         except KeyError:
             raise PageSaveError("No text available to save!")
-        result = self.user.api_request({
+        data = {
             'action': 'edit',
             'title': self.title,
             'text': self.data['raw']['text'],
             'summary': summary,
-            'minor': minor,
-            'bot': bot,
             'token': self.user.edit_token
-        })
+        }
+        if minor:
+            data['minor'] = 1
+        if bot:
+            data['bot'] = 1
+        self.user.api_request(data)
     
     @property
     def text(self):
