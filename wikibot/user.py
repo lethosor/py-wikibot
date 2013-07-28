@@ -28,6 +28,7 @@ class UserPermissionError(UserError):
 
 class User:
     def __init__(self, site, username='', password='', auto_login=True, api_obj=None):
+        self.logged_in = False
         if isinstance(site, str):
             site = api.Site(site)
         if not isinstance(site, api.Site):
@@ -65,6 +66,8 @@ class User:
         else:
             util.log("Login as %s failed: %s" % (self.username, val_2['result']))
             return False
+        
+        self.logged_in = True
         # Set login cookies
         cookie_prefix = val_2['cookieprefix']
         self.cookies.set(cookie_prefix + 'UserID', val_2['lguserid'])
@@ -76,6 +79,7 @@ class User:
     
     def logout(self):
         self.api_request({'action':'logout'})
+        self.logged_in = False
     
     def init(self):
         try:
