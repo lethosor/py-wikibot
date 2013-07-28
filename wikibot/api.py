@@ -20,18 +20,46 @@ class Site:
             url = url[:-1]
         url += "/api.php"
         self.url = url
-    
+
+class PageError(Exception):
+    pass
+
+class PageSaveError(PageError):
+    pass
+
+
 class Page:
     def __init__(self, title='', user=None, auto_load=True):
         self.title = title
         if user is None or not hasattr(user, 'api'):
             raise TypeError("Must have a valid user!")
         self.user = user
+        self.data = {}
         if auto_load:
             self.load()
     
-    def load(self):
-        self.result = result = self.user.api_request({
+    def load(self, items='raw'):
+        """
+        Load page data
+        
+        items: Data to load about the page, either a string (for only one piece
+        of data) or a list. Defaults to 'raw'.
+        Each item is translated to a self.fetch_<item> call.
+        """
+        if items is None:
+            items = ['raw']
+        if isinstance(items, str):
+            items = [items]
+        for i in items:
+            i = "fetch_" + i
+            if hasattr(self, i):
+                func = getattr(self, i)
+                if hasattr(func, '__call__'):
+                    func()
+        
+    
+    def fetch_raw(self):
+        result = self.user.api_request({
             'titles': self.title,
             'indexpageids': 1,
             'prop': 'revisions',
@@ -46,13 +74,22 @@ class Page:
             # Page does not exist (negative ID)
             self.exists = False
             text = ''
-        self.text = text
+        self.data['raw'] = {
+            'result': result,
+            'text': text
+        }
+        return self.data['raw']
+    
     
     def save(self, summary='', minor=0, bot=0):
+        try:
+            text = self.data['raw']['text']
+        except KeyError:
+            raise PageSaveError("No text available to save!")
         result = self.user.api_request({
             'action': 'edit',
             'title': self.title,
-            'text': self.text,
+            'text': self.data['raw']['text'],
             'summary': summary,
             'minor': minor,
             'bot': bot,
