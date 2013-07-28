@@ -104,5 +104,7 @@ class User:
             return req.result
         return req
         
+    def get_page(self, page_name, *args, **kwargs):
+        return api.Page(page_name, self, *args,**kwargs)
     
 

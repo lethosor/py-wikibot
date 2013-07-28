@@ -26,11 +26,20 @@ class Page:
         self.title = title
         if user is None or not hasattr(user, 'api'):
             raise TypeError("Must have a valid user!")
+        self.user = user
         if auto_load:
             self.load()
     
     def load(self):
-        pass
+        result = self.user.api_request({
+            'titles': self.title,
+            'indexpageids': 1,
+            'prop': 'revisions',
+            'rvprop': 'content',
+            'rvlimit': 1
+        })
+        text = result['query']['pages'][result['query']['pageids'][0]]['revisions'][0]['*']
+        self.text = text
     
     
 

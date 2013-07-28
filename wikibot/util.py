@@ -31,7 +31,7 @@ def qs_decode(s):
 def qs_encode(d):
     data_string = ''
     for i in d:
-        data_string += "&%s=%s" % (urllib.quote(i), urllib.quote(d[i]))
+        data_string += "&%s=%s" % (urllib.quote(i), urllib.quote(str(d[i])))
     
     data_string = data_string[1:]
     return data_string
