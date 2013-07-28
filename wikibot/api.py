@@ -2,6 +2,8 @@
 Interface for the MediaWiki API
 """
 
+__metaclass__ = type
+
 import json
 import pickle
 
@@ -95,6 +97,15 @@ class Page:
             'bot': bot,
             'token': self.user.edit_token
         })
+    
+    @property
+    def text(self):
+        return self.data['raw']['text']
+    
+    @text.setter
+    def text(self, new):
+        self.data['raw']['text'] = new
+        return new
     
     
 
