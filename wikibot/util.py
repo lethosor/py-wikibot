@@ -20,6 +20,20 @@ def die(*args):
 def dict_extend(d1, d2):
     return dict(d1, **d2)
 
+
+def dict_recursive_fetch_list(d, key):
+    """
+    Returns a list of _all_ values in dict 'd' with key 'key'
+    """
+    l = []
+    for i in d:
+        if i == key:
+            l.append(d[i])
+        elif isinstance(d[i], dict):
+            l.extend(dict_recursive_fetch_list(d[i], key))
+    return l
+
+
 def qs_decode(s):
     d = {}
     a = s.split('&')
