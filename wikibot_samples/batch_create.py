@@ -11,15 +11,16 @@ class BatchCreateTask(bot.Task):
         if data is None:
             data = {}
         super(BatchCreateTask, self).__init__(user, BatchCreateJob, data)
+        self.text, self.summary = text, summary
         self.page_names = page_list
-        
-        self.summary = summary
     
     
 
 class BatchCreateJob(bot.Job):
     def run(self, task, page, data):
-        pass
-    
+        if page.text != "":
+            return False
+        page.text = task.text.format(data)
+        return True
 
 
