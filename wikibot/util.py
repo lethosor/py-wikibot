@@ -13,6 +13,10 @@ py_version = int(sys.version.split()[0].split('.')[0])
 def log(*args):
     print(' '.join([str(x) for x in args]))
 
+def logf(*args):
+    sys.stdout.write(' '.join([str(x) for x in args]))
+    sys.stdout.flush()
+
 def die(*args):
     log(*args)
     sys.exit()

@@ -11,6 +11,8 @@ class BatchCreateTask(bot.Task):
         if data is None:
             data = {}
         super(BatchCreateTask, self).__init__(user, BatchCreateJob, data)
+        self.page_names = page_list
+        
         self.summary = summary
     
     
