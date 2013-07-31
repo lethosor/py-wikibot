@@ -1,6 +1,8 @@
 """
 template_subst
 
+*** NOT PORTED TO NEW TASK SYSTEM YET ***
+
 Replaces all occurences of a template with the substituted template
 
 Does NOT support query-continue yet
