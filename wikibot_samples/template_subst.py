@@ -8,7 +8,13 @@ Does NOT support query-continue yet
 
 import re
 
-from wikibot import util
+import bot
+
+class TemplateSubstTask(bot.Task):
+    def __init__(self, user, template_name, template_ns='Template:', summary='Substituting {template_name} ({0}/{1})'):
+        self.user
+    
+
 
 def run(user, template_name, template_ns="Template"):
     template_name = template_ns + ':' + template_name

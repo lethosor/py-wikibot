@@ -18,7 +18,9 @@ class Task:
             raise NotImplementedError("Tasks cannot be instantiated.")
         return super(Task, cls).__new__(cls, *args)
     
-    def __init__(self, user, job, data):
+    def __init__(self, user, job, data=None):
+        if data is None:
+            data = {}
         self.user, self.job, self.data = user, job, data
     
     def get_pages(self):
