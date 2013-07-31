@@ -37,7 +37,10 @@ class Task:
         data = None
         if page_name in self.data:
             data = self.data['page_name']
-        job = self.job(self.__class__, page, data, count, auto_run=True)
+        job = self.job(self, page, data, count, auto_run=False)
+        success = job.run()
+        if success:
+            job.save()
     
     def run_all(self):
         util.log("Starting jobs")
@@ -53,15 +56,16 @@ class Task:
         end_time = time.time()
         util.log("\nFinished")
     
-    
-    
 
 class Job:
     """
     An edit
     """
     def __init__(self, task, page, data, count, auto_run=True):
+        self.task, self.page, self.data, self.count = task, page, data, count
         if auto_run:
-            self.run(task, page, data)
+            self.run()
     
+    def save(self):
+        self.page.save()
 
