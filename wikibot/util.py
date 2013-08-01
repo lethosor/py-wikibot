@@ -5,6 +5,7 @@ Utilities
 # Consistency
 from __future__ import print_function
 
+import getpass
 import sys
 import urllib
 
@@ -16,6 +17,15 @@ def log(*args):
 def logf(*args):
     sys.stdout.write(' '.join([str(x) for x in args]))
     sys.stdout.flush()
+
+def input(prompt='', visible=True):
+    if not visible:
+        return getpass.getpass(prompt)
+    
+    if py_version == 3:
+        return input(prompt)
+    else:
+        return raw_input(prompt)
 
 def die(*args):
     log(*args)

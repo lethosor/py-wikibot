@@ -38,7 +38,7 @@ class Task:
         page = self.user.get_page(page_name)
         data = None
         if page_name in self.data:
-            data = self.data['page_name']
+            data = self.data[page_name]
         job = self.job(self, page, data, count, auto_run=False)
         success = job.run()
         if success:

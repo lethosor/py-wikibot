@@ -3,9 +3,17 @@ Python MediaWiki bot framework
 
 """
 
+import sys
+
 # Submodules
 import api
 import bot
+import command_line
+import defaults
 import network
 import user
 import util
+
+def init():
+    command_line.parse_args(sys.argv)
+
