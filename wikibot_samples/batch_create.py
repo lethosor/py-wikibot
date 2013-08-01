@@ -29,5 +29,3 @@ class BatchCreateJob(wikibot.bot.Job):
             bot=1
         )
     
-if __name__ == '__main__':
-    wikibot.init()
