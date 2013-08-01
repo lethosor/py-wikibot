@@ -47,6 +47,19 @@ def dict_recursive_fetch_list(d, key):
             l.extend(dict_recursive_fetch_list(d[i], key))
     return l
 
+def str_format(string, *args, **kwargs):
+    """
+    A slightly modified version of the native str.format(), using {% and %}
+    instead of { and }
+    
+    >>> str_format('{a}', a=2)
+    {a}
+    >>> str_format('{%a%}, a=2)
+    2
+    """
+    return string.replace('{','{{').replace('}','}}') \
+        .replace('{{%', '{').replace('%}}','}').format(*args, **kwargs)
+
 
 def qs_decode(s):
     d = {}

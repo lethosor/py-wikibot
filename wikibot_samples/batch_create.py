@@ -20,7 +20,7 @@ class BatchCreateJob(wikibot.bot.Job):
     def run(self):
         if self.page.text != "":
             return False
-        self.page.text = self.task.text.format(data=self.data)
+        self.page.text = self.format(self.task.text, self.data)
         return True
     
     def save(self):
