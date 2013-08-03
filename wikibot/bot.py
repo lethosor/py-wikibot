@@ -71,12 +71,8 @@ class Job:
     def save(self):
         self.page.save()
     
-    def format(self, string, data):
-        """
-        A slightly modified version of the native str.format(), using {% and %}
-        instead of { and }
-        """
-        return util.str_format(string, data=data)
+    def format(self, string):
+        return util.str_format(string, data=self.data)
     
     
 
