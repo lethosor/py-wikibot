@@ -6,6 +6,8 @@ import importlib
 
 import wikibot
 
+get_user = wikibot.command_line.get_user
+
 def load_user(identifier):
     try:
         site_name, user_name = identifier.split(':')
