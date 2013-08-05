@@ -4,7 +4,7 @@
 *.komodoproject
 
 # Credentials
-wikibot/cred/*/*
+wikibot/creds/*/*
 
 # Autosave files
 *~
