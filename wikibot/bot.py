@@ -72,7 +72,7 @@ class Job:
         self.page.save()
     
     def format(self, string):
-        return util.str_format(string, data=self.data)
+        return util.str_format(string, data=self.data, page=self.page, job=self)
     
     
 
