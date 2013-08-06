@@ -87,14 +87,15 @@ def get_user_creds():
                 pass
             else:
                 break
-        ident = ident + ':' + username
-        util.log('Creating user %s...' % ident)
+        user_id = ident + ':' + username
+        util.log('Creating user %s...' % user_id)
     except KeyboardInterrupt:
         util.log('\nUser creation aborted.')
     
     return {
         'site_url': url,
-        'identifier': ident,
+        'site_id': ident,
+        'user_id': user_id,
         'username': username,
         'password': password,
         'user': user
@@ -102,5 +103,7 @@ def get_user_creds():
     
 def create_new_user():
     util.log('Creating new user')
-    user_info = get_user_creds()
-    
+    ui = get_user_creds()
+    wikibot.cred.save_site_file(ui['site_id'], ui['site_url'])
+    wikibot.cred.save_user_file(ui['site_id'], ui['username'], ui['password'])
+    return ui['user_id']
