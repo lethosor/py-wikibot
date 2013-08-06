@@ -26,9 +26,9 @@ def parse_args(args=None):
 
 def get_user():
     help_str = """\
-a: Abort
-o: One-time login (bypass saving)\
-"""
+    a: Abort
+    o: One-time login (bypass saving)\
+    """.replace('  ', '')
     args = parse_args()
     if 'user' in args:
         return wikibot.cred.load_user(args['user'])
@@ -50,7 +50,7 @@ o: One-time login (bypass saving)\
                 except ValueError:
                     util.log('"{0}" is not a valid user ID!'.format(ident))
 
-def get_user():
+def get_user_creds():
     util.log('Press Ctrl-C to abort user creation.')
     try:
         while 1:
@@ -95,6 +95,6 @@ def get_user():
     
 def create_new_user():
     util.log('Creating new user')
-    user_info = get_user()
+    user_info = get_user_creds()
     
 
