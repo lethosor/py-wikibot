@@ -26,13 +26,13 @@ def get_creds_path(*args):
     return os.path.join(os.path.dirname(__file__), 'creds', *args)
 
 
-def save_site_file(identifier, url):
+def save_site_file(site_id, url):
     string = """\
-# Site info for {identifier}
+# Site info for {site}
 url = "{url}"
-""".format(url=url, identifier=identifier)
+""".format(url=url, site=site_id)
     # Create an init file
-    init_path = get_creds_path(identifier, '__init__.py')
+    init_path = get_creds_path(site_id, '__init__.py')
     try:
         os.mkdir(os.path.dirname(init_path))
     except OSError:
@@ -40,7 +40,7 @@ url = "{url}"
     # Create empty file
     init_file = open(init_path, 'w')
     init_file.close()
-    si_path = get_creds_path(identifier, '__siteinfo__.py')
+    si_path = get_creds_path(site_id, '__siteinfo__.py')
     si_file = open(si_path, 'w')
     si_file.write(string)
     si_file.close()

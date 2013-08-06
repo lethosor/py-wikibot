@@ -45,7 +45,6 @@ def get_user():
                 creds = get_user_creds()
                 return creds['user']
             elif ident == '?':
-                # Create new user
                 print help_str
             else:
                 try:
@@ -95,9 +94,9 @@ def get_user_creds():
     
     return {
         'site_url': url,
+        'identifier': ident,
         'username': username,
         'password': password,
-        'identifier': ident,
         'user': user
     }
     
