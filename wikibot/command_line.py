@@ -38,7 +38,7 @@ def get_user():
             if ident == 'a':
                 return
             elif ident == 'o':
-                return get_one_time_user()
+                return get_user_creds()
             elif ident == '?':
                 # Create new user
                 print help_str
