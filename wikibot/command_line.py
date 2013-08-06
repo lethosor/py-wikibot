@@ -97,4 +97,3 @@ def create_new_user():
     util.log('Creating new user')
     user_info = get_user_creds()
     
-
