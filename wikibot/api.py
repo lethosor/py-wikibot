@@ -110,6 +110,11 @@ class Page:
         return new
     
     
+class ApiError(Exception):
+    pass
+
+class ApiInvalidResponseError(ApiError):
+    pass
 
 
 class API:
@@ -208,7 +213,10 @@ class APIResult:
         self.value = self.response
         self.headers = request.response.getheaders()
         if 'format' in data and data['format'] == 'json':
-            self.value = json.loads(self.response)
+            try:
+                self.value = json.loads(self.response)
+            except ValueError:
+                raise ApiInvalidResponseError('API did not return a JSON result.')
             if api_request.enable_auto_filter:
                 self.value = api_request.auto_filter(self.value)
     

@@ -50,7 +50,51 @@ o: One-time login (bypass saving)\
                 except ValueError:
                     util.log('"{0}" is not a valid user ID!'.format(ident))
 
-def get_one_time_user():
-    pass
+def get_user():
+    util.log('Press Ctrl-C to abort user creation.')
+    try:
+        while 1:
+            url = util.input('Wiki URL: ')
+            try:
+                api = wikibot.api.API(url)
+            except wikibot.api.ApiInvalidResponseError:
+                util.log('Invalid URL - use the "script path" URL found at Special:Version on your wiki.')
+            except:
+                util.log('An error occured while connecting to the server. Please check the URL.')
+            else:
+                break
+        while 1:
+            username = util.input('Username: ')
+            password = util.input('Password: ', visible=False)
+            user = wikibot.user.User(url, username, password)
+            if user.logged_in:
+                break
+            util.log('Incorrect username/password. Please try again.')
+        util.log('''
+        Choose a unique identifier for this site (for example, "enwiki" would be
+        appropriate for the English Wikipedia).'''.replace('  ', ''))
+        while 1:
+            ident = util.input('Identifier: ')
+            if ':' in ident:
+                util.log('Colons are not allowed in site identifiers.')
+            elif not ident:
+                pass
+            else:
+                break
+        ident = ident + ':' + username
+        util.log('Creating user %s...' % ident)
+    except KeyboardInterrupt:
+        util.log('\nUser creation aborted.')
+    
+    return {
+        'site_url': url,
+        'username': username,
+        'password': password,
+        'identifier': ident
+    }
+    
+def create_new_user():
+    util.log('Creating new user')
+    user_info = get_user()
     
 
