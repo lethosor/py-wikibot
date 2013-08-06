@@ -27,6 +27,7 @@ def parse_args(args=None):
 def get_user():
     help_str = """\
     a: Abort
+    n: Create new user
     o: One-time login (bypass saving)\
     """.replace('  ', '')
     args = parse_args()
@@ -37,8 +38,12 @@ def get_user():
             ident = wikibot.util.input('User ID (site:username), "?" for help: ')
             if ident == 'a':
                 return
+            elif ident == 'n':
+                user_id = create_new_user()
+                return wikibot.cred.load_user(user_id)
             elif ident == 'o':
-                return get_user_creds()
+                creds = get_user_creds()
+                return creds['user']
             elif ident == '?':
                 # Create new user
                 print help_str
@@ -49,6 +54,8 @@ def get_user():
                     util.log('Could not load user data for {0}.'.format(ident))
                 except ValueError:
                     util.log('"{0}" is not a valid user ID!'.format(ident))
+                except AttributeError:
+                    util.log('User data is incomplete!')
 
 def get_user_creds():
     util.log('Press Ctrl-C to abort user creation.')
@@ -90,7 +97,8 @@ def get_user_creds():
         'site_url': url,
         'username': username,
         'password': password,
-        'identifier': ident
+        'identifier': ident,
+        'user': user
     }
     
 def create_new_user():
