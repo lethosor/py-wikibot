@@ -25,13 +25,8 @@ def load_user(identifier):
 def get_creds_path(*args):
     return os.path.join(os.path.dirname(__file__), 'creds', *args)
 
-
-def save_site_file(site_id, url):
-    string = """\
-# Site info for {site}
-url = "{url}"
-""".format(url=url, site=site_id)
-    # Create an init file
+def save_init_file(site_id):
+    """ Creates an init file, if it doesn't already exist """
     init_path = get_creds_path(site_id, '__init__.py')
     try:
         os.mkdir(os.path.dirname(init_path))
@@ -40,6 +35,13 @@ url = "{url}"
     # Create empty file
     init_file = open(init_path, 'w')
     init_file.close()
+
+def save_site_file(site_id, url):
+    string = """\
+# Site info for {site}
+url = "{url}"
+""".format(url=url, site=site_id)
+    save_init_file(site_id)
     si_path = get_creds_path(site_id, '__siteinfo__.py')
     si_file = open(si_path, 'w')
     si_file.write(string)
@@ -51,4 +53,8 @@ def save_user_file(site_id, username, password):
 username = "{user}"
 password = "{password}"
 """.format(site=site_id, user=username, password=password)
+    save_init_file(site_id)
     path = get_creds_path(site_id, username + '.py')
+    f = open(path, 'w')
+    f.write(string)
+    f.close()
