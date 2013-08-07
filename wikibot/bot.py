@@ -13,10 +13,10 @@ class Task:
     """
     A series of jobs
     """
-    def __new__(cls, *args):
+    def __new__(cls, *args, **kwargs):
         if cls == Task:
             raise NotImplementedError("Tasks cannot be instantiated.")
-        return super(Task, cls).__new__(cls, *args)
+        return super(Task, cls).__new__(cls, *args, **kwargs)
     
     def __init__(self, user, job, data=None):
         if data is None:
