@@ -55,9 +55,9 @@ def str_format(string, *args, **kwargs):
     
     >>> str_format('{a}', a=2)
     {a}
-    >>> str_format('{%a%}, a=2)
+    >>> str_format('{%a%}', a=2)
     2
-    >>> str_format('{% a %}, a=2)
+    >>> str_format('{% a %}', a=2)
     2
     """
     # Accept whitespace directly inside {% ... %} tags
