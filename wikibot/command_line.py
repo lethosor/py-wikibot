@@ -2,6 +2,7 @@
 Command-line tools
 """
 
+import readline
 import sys
 
 import wikibot
