@@ -6,6 +6,7 @@ Utilities
 from __future__ import print_function
 
 import getpass
+import re
 import sys
 import urllib
 
@@ -56,9 +57,15 @@ def str_format(string, *args, **kwargs):
     {a}
     >>> str_format('{%a%}, a=2)
     2
+    >>> str_format('{% a %}, a=2)
+    2
     """
-    return string.replace('{','{{').replace('}','}}') \
-        .replace('{{%', '{').replace('%}}','}').format(*args, **kwargs)
+    # Accept whitespace directly inside {% ... %} tags
+    string = re.compile(r'\{%\s+').sub('{%', string)
+    string = re.compile(r'\s+%\}').sub('%}', string)
+    string = string.replace('{','{{').replace('}','}}') \
+        .replace('{{%', '{').replace('%}}','}')
+    return string.format(*args, **kwargs)
 
 
 def qs_decode(s):
