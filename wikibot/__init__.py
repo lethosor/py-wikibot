@@ -10,7 +10,6 @@ import api
 import bot
 import command_line
 import cred
-import defaults
 import network
 import user
 import util
