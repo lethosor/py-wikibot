@@ -28,6 +28,30 @@ def input(prompt='', visible=True):
     else:
         return raw_input(prompt)
 
+def get_file(prompt='File: ', exists=True, path=''):
+    """
+    Prompt for a file
+    
+    prompt: Text to display (defaults to "File: ")
+    exists: True if file should exist (defaults to True)
+    path: An initial path to use, returned if acceptable (optional)
+    """
+    path = str(path)
+    while 1:
+        if not path:
+            path = input(prompt)
+        if exists:
+            try:
+                f = open(path)
+            except IOError:
+                pass
+            else:
+                break
+        else:
+            break
+        path = ''
+    return path
+
 def die(*args):
     log(*args)
     sys.exit()
