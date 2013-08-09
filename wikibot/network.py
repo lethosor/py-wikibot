@@ -69,7 +69,7 @@ class Request:
             try:
                 header, value = i
                 self.conn.putheader(header, value)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 pass
         self.conn.endheaders()
         self.conn.send(self.post_data)
