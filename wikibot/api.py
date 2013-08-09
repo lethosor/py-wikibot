@@ -196,8 +196,10 @@ class APIRequest:
             try:
                 if len(obj.keys()) > 1:
                     break
-                if isinstance(obj[obj.keys()[0]], dict):
-                    obj = obj[obj.keys()[0]]
+                # list() is necessary for python 3, where keys() doesn't return
+                # a list that supports indexes
+                if isinstance(obj[list(obj.keys())[0]], dict):
+                    obj = obj[list(obj.keys())[0]]
                 else:
                     break
             except AttributeError:
