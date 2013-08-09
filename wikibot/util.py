@@ -23,10 +23,11 @@ def input(prompt='', visible=True):
     if not visible:
         return getpass.getpass(prompt)
     
-    if py_version == 3:
-        return input(prompt)
+    logf(prompt)
+    if visible:
+        return sys.stdin.readline().rstrip('\n')
     else:
-        return raw_input(prompt)
+        return getpass.getpass('')
 
 def get_file(prompt='File: ', exists=True, path=''):
     """
