@@ -7,7 +7,7 @@ __metaclass__ = type
 import multiprocessing
 import sys
 
-import util
+import wikibot.util as util
 
 if util.py_version == 2:
     import httplib

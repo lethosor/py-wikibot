@@ -5,9 +5,9 @@ Bots
 __metaclass__ = type
 
 import time
-
 import sys
-import util
+
+import wikibot.util as util
 
 class Task:
     """

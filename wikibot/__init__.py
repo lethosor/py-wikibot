@@ -6,16 +6,16 @@ Python MediaWiki bot framework
 import sys
 
 # Submodules
-import api
-import bot
-import command_line
-import cred
-import network
-import user
-import util
+import wikibot.api
+import wikibot.bot
+import wikibot.command_line
+import wikibot.cred
+import wikibot.network
+import wikibot.user
+import wikibot.util
 
 # Credentials
-import creds
+import wikibot.creds
 
 def init():
     command_line.parse_args(sys.argv)

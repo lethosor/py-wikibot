@@ -4,9 +4,9 @@ Users
 
 __metaclass__ = type
 
-import api
-import network
-import util
+import wikibot.api as api
+import wikibot.network as network
+import wikibot.util as util
 
 class UserError(Exception):
     """

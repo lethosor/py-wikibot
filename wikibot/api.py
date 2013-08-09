@@ -8,8 +8,8 @@ import json
 import pickle
 
 # wikibot
-import network
-import util
+import wikibot.network as network
+import wikibot.util as util
 
 class Site:
     def __init__(self, url):
