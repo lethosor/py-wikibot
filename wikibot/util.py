@@ -8,9 +8,14 @@ from __future__ import print_function
 import getpass
 import re
 import sys
-import urllib
 
 py_version = int(sys.version.split()[0].split('.')[0])
+
+if py_version == 2:
+    import urllib
+else:
+    import urllib.parse as urllib
+
 
 def log(*args):
     print(' '.join([str(x) for x in args]))
