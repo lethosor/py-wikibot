@@ -72,7 +72,8 @@ class Request:
             except (TypeError, ValueError):
                 pass
         self.conn.endheaders()
-        self.conn.send(self.post_data)
+        # encode() is for python 3 - converts to ASCII
+        self.conn.send(self.post_data.encode())
         self.response = self.conn.getresponse()
         self.response_text = self.response.read()
         # Callback
