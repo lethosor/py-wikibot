@@ -46,7 +46,7 @@ def get_user():
                 creds = get_user_creds()
                 return creds['user']
             elif ident == '?':
-                print help_str
+                util.log(help_str)
             else:
                 try:
                     return wikibot.cred.load_user(ident)
