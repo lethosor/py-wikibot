@@ -28,7 +28,7 @@ class Task:
         if hasattr(self, 'page_names'):
             page_names.extend(self.page_names)
         elif hasattr(self, 'page_names_query'):
-            q = self.user.api_request(self.page_names_query)
+            q = self.user.api_request(self.page_names_query, auto_filter=False)
             page_names.extend(util.dict_recursive_fetch_list(q['query'], 'title'))
         else:
             raise AttributeError("No list of page names found.")
