@@ -209,7 +209,7 @@ class APIRequest:
 
 class APIResult:
     def __init__(self, api_request, request, data):
-        self.response = request.response_text
+        self.response = request.response_text.decode()
         self.value = self.response
         self.headers = request.response.getheaders()
         if 'format' in data and data['format'] == 'json':
