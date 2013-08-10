@@ -1,7 +1,7 @@
 """
-batch_create
+add_content
 
-Creates a list of pages, each with the specified text.
+Can prepend/append text to a page, or call a separate function for each page.
 """
 
 import wikibot
