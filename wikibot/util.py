@@ -69,13 +69,20 @@ def dict_extend(d1, d2):
 def dict_recursive_fetch_list(d, key):
     """
     Returns a list of _all_ values in dict 'd' with key 'key'
+    Also fetches items in lists
     """
     l = []
+    
+    if isinstance(d, list):
+        for i in d:
+            l.extend(dict_recursive_fetch_list(i, key))
+        return l
     for i in d:
         if i == key:
             l.append(d[i])
-        elif isinstance(d[i], dict):
+        elif isinstance(d[i], (dict, list)):
             l.extend(dict_recursive_fetch_list(d[i], key))
+            
     return l
 
 def str_format(string, *args, **kwargs):
