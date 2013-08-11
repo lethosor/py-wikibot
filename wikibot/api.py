@@ -31,6 +31,8 @@ class PageSaveError(PageError):
 
 
 class Page:
+    default_items = ['raw']
+    
     def __init__(self, title='', user=None, auto_load=True):
         self.title = title
         if user is None or not hasattr(user, 'api'):
@@ -40,7 +42,7 @@ class Page:
         if auto_load:
             self.load()
     
-    def load(self, items='raw'):
+    def load(self, items=None):
         """
         Load page data
         
@@ -49,7 +51,7 @@ class Page:
         Each item is translated to a self.fetch_<item> call.
         """
         if items is None:
-            items = ['raw']
+            items = self.default_items
         if isinstance(items, str):
             items = [items]
         for i in items:
@@ -58,7 +60,6 @@ class Page:
                 func = getattr(self, f)
                 if hasattr(func, '__call__'):
                     self.data[i] = func()
-        
     
     def fetch_raw(self):
         result = self.user.api_request({
@@ -109,6 +110,17 @@ class Page:
         self.data['raw']['text'] = new
         return new
     
+class Category(Page):
+    default_items = ['raw', 'pages']
+    
+    def __init__(self, title, *args, **kwargs):
+        if not title.startswith('Category:'):
+            title = 'Category:' + title
+        super(Category, self).__init__(title, *args, **kwargs)
+    
+    def fetch_pages(self):
+        pass
+
     
 class ApiError(Exception):
     pass
