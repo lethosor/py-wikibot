@@ -9,7 +9,7 @@ import getpass
 import re
 import sys
 
-py_version = int(sys.version.split()[0].split('.')[0])
+py_version = sys.version_info.major
 
 if py_version == 2:
     import urllib
