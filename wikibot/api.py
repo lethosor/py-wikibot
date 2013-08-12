@@ -201,7 +201,7 @@ class APIRequest:
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         self.req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
-        self.result = APIResult(self, req, self.data, auto_filter=self.enable_auto_filter)
+        self.result = APIResult(self, self.req, self.data, auto_filter=self.enable_auto_filter)
         return self.result
     
 
@@ -216,7 +216,10 @@ class APIResult:
             except ValueError:
                 raise ApiInvalidResponseError('API did not return a JSON result.')
             if auto_filter:
-                self.value = self.auto_filter(self.value)
+                self.apply_filter()
+    
+    def apply_filter(self):
+        self.value = self.auto_filter(self.value)
     
     def auto_filter(self, obj):
         while True:
