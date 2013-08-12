@@ -181,7 +181,8 @@ class API:
 
 
 class APIRequest:
-    def __init__(self, api, data={}, method='auto', auto=True, auto_filter=True, headers=None):
+    def __init__(self, api, data={}, method='auto', auto=True, auto_filter=True,
+                 headers=None, query_continue=True):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
            
         self.api, self.data, self.method, self.enable_auto_filter, self.headers = \
@@ -199,8 +200,8 @@ class APIRequest:
                 self.method = 'POST'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
-        self.req = req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
-        self.result = result = APIResult(self, req, self.data, auto_filter=self.enable_auto_filter)
+        self.req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
+        self.result = APIResult(self, req, self.data, auto_filter=self.enable_auto_filter)
         return self.result
     
 
