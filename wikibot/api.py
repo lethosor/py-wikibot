@@ -200,8 +200,22 @@ class APIRequest:
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         self.req = req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
-        self.result = result = APIResult(self, req, self.data)
+        self.result = result = APIResult(self, req, self.data, auto_filter=self.enable_auto_filter)
         return self.result
+    
+
+class APIResult:
+    def __init__(self, api_request, request, data, auto_filter=True):
+        self.response = request.response_text.decode()
+        self.value = self.response
+        self.headers = request.response.getheaders()
+        if 'format' in data and data['format'] == 'json':
+            try:
+                self.value = json.loads(self.response)
+            except ValueError:
+                raise ApiInvalidResponseError('API did not return a JSON result.')
+            if auto_filter:
+                self.value = self.auto_filter(self.value)
     
     def auto_filter(self, obj):
         while True:
@@ -218,20 +232,5 @@ class APIRequest:
                 # Single remaining object is not a dict
                 break
         
-        return obj
-    
-
-class APIResult:
-    def __init__(self, api_request, request, data):
-        self.response = request.response_text.decode()
-        self.value = self.response
-        self.headers = request.response.getheaders()
-        if 'format' in data and data['format'] == 'json':
-            try:
-                self.value = json.loads(self.response)
-            except ValueError:
-                raise ApiInvalidResponseError('API did not return a JSON result.')
-            if api_request.enable_auto_filter:
-                self.value = api_request.auto_filter(self.value)
-    
+        return obj    
 
