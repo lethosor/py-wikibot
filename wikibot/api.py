@@ -83,14 +83,16 @@ class Page:
         }
     
     
-    def save(self, summary='', minor=0, bot=0):
+    def save(self, summary='', minor=0, bot=0, title=None, refresh=False):
+        if title is None:
+            title = self.title
         try:
             text = self.data['raw']['text']
         except KeyError:
             raise PageSaveError("No text available to save!")
         data = {
             'action': 'edit',
-            'title': self.title,
+            'title': title,
             'text': self.data['raw']['text'],
             'summary': summary,
             'token': self.user.edit_token
@@ -100,6 +102,11 @@ class Page:
         if bot:
             data['bot'] = 1
         self.user.api_request(data)
+        if refresh:
+            self.load()
+    
+    def save_to(self, title, *args, **kwargs):
+        self.save(title=title, *args, **kwargs)
     
     @property
     def text(self):
