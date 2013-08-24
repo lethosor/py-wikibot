@@ -191,7 +191,9 @@ class APIRequest:
     def __init__(self, api, data={}, method='auto', auto=True, auto_filter=True,
                  headers=None, query_continue=True):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
-           
+        if data['action'] == 'query' and 'continue' not in data:
+            data['continue'] = ''
+        
         self.api, self.data, self.method, self.enable_auto_filter, self.headers = \
             api, data, method, auto_filter, headers
         
@@ -208,9 +210,15 @@ class APIRequest:
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
         self.req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
-        self.result = APIResult(self, self.req, self.data, auto_filter=self.enable_auto_filter)
+        self.result = APIResult(self, self.req, self.data, auto_filter=False)
+        value = self.result.value
+        if 'query-continue' in value:
+            pass
+        if self.enable_auto_filter:
+            value = util.dict_auto_filter(value)
+        self.result.value = value
         return self.result
-    
+
 
 class APIResult:
     def __init__(self, api_request, request, data, auto_filter=True):
@@ -226,22 +234,5 @@ class APIResult:
                 self.apply_filter()
     
     def apply_filter(self):
-        self.value = self.auto_filter(self.value)
+        self.value = util.dict_auto_filter(self.value)
     
-    def auto_filter(self, obj):
-        while True:
-            try:
-                if len(obj.keys()) > 1:
-                    break
-                # list() is necessary for python 3, where keys() doesn't return
-                # a list that supports indexes
-                if isinstance(obj[list(obj.keys())[0]], dict):
-                    obj = obj[list(obj.keys())[0]]
-                else:
-                    break
-            except AttributeError:
-                # Single remaining object is not a dict
-                break
-        
-        return obj    
-

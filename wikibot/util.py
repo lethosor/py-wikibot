@@ -62,6 +62,24 @@ def die(*args):
     log(*args)
     sys.exit()
 
+def dict_auto_filter(obj):
+    while True:
+        try:
+            if len(obj.keys()) > 1:
+                break
+            # list() is necessary for python 3, where keys() doesn't return
+            # a list that supports indexes
+            if isinstance(obj[list(obj.keys())[0]], dict):
+                obj = obj[list(obj.keys())[0]]
+            else:
+                break
+        except AttributeError:
+            # Single remaining object is not a dict
+            break
+    
+    return obj
+
+
 def dict_extend(d1, d2):
     return dict(d1, **d2)
 
