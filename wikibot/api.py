@@ -8,6 +8,7 @@ import json
 import pickle
 
 # wikibot
+import wikibot
 import wikibot.network as network
 import wikibot.util as util
 
@@ -209,16 +210,28 @@ class APIRequest:
                 self.method = 'POST'
         if not self.method in ('GET', 'POST'):
             raise ValueError('Method must be GET/POST')
-        self.req = network.Request(self.api.url, data=self.data, method=self.method, headers=self.headers)
-        self.result = APIResult(self, self.req, self.data, auto_filter=False)
+        self.result = self.send_request()
         value = self.result.value
-        if 'query-continue' in value:
-            pass
+        data = self.data.copy()
+        while 'continue' in value:
+            data.update(value['continue'])
+            result = self.send_request(data)
+            value = util.recursive_merge(result.value, value)
+            if not 'continue' in result.value:
+                del value['continue']
+                break
         if self.enable_auto_filter:
             value = util.dict_auto_filter(value)
         self.result.value = value
         return self.result
-
+    
+    def send_request(self, data=None):
+        if data is None:
+            data = self.data
+        self.req = network.Request(self.api.url, data=data, method=self.method, headers=self.headers)
+        return APIResult(self, self.req, self.data, auto_filter=False)
+    
+    
 
 class APIResult:
     def __init__(self, api_request, request, data, auto_filter=True):
