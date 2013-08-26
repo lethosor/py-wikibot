@@ -65,9 +65,13 @@ class Request:
     def fetch(self):
         self.conn.putrequest(self.method, self.path)
         self.headers.append(('Content-Length', len(self.post_data)))
+        sent_headers = []
         for i in self.headers:
             try:
                 header, value = i
+                if header in sent_headers:
+                    continue
+                sent_headers.append(header)
                 self.conn.putheader(header, value)
             except (TypeError, ValueError):
                 pass
