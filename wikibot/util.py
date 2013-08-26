@@ -16,6 +16,11 @@ if py_version == 2:
 else:
     import urllib.parse as urllib
 
+class DynamicList(list):
+    def __setitem__(self, i, v):
+        # Fill with None
+        self[len(self):i+1] = [None for x in range(i+1-len(self))]
+        super(DynamicList, self).__setitem__(i, v)
 
 def log(*args):
     print(' '.join([str(x) for x in args]))
@@ -83,7 +88,6 @@ def dict_auto_filter(obj):
 def dict_extend(d1, d2):
     return dict(d1, **d2)
 
-
 def dict_recursive_fetch_list(d, key):
     """
     Returns a list of _all_ values in dict 'd' with key 'key'
@@ -102,6 +106,39 @@ def dict_recursive_fetch_list(d, key):
             l.extend(dict_recursive_fetch_list(d[i], key))
             
     return l
+
+def recursive_merge(d1, d2):
+    """
+    Merges two dictionaries and their sub-dictionaries and/or lists
+    """
+    result = {} if isinstance(d1, dict) or isinstance(d2, dict) else []
+    keys = (list(d1.keys()) if isinstance(d1, dict) else range(len(d1))) + \
+           (list(d2.keys()) if isinstance(d2, dict) else range(len(d2)))
+    # Remove duplicates
+    keys = list(set(keys))
+    if isinstance(result, dict):
+        # Current object is a dict
+        for k in keys:
+            if k in d1 and k in d2:
+                v1, v2 = d1[k], d2[k]
+                if v1 != v2:
+                    if isinstance(v1, (dict, list)) and isinstance(v2, (dict, list)):
+                        # Values can be merged
+                        result[k] = recursive_merge(v1, v2)
+                    else:
+                        # Values cannot be merged, so return the value from d1
+                        result[k] = v1
+                else:
+                    # Values are equal, so merging is unnecessary
+                    result[k] = v1
+            else:
+                # Key is either in d1 or d2
+                result[k] = d1[k] if k in d1 else d2[k]
+    else:
+        # Current object is a list
+        result = d1 + d2
+    return result
+    
 
 def str_format(string, *args, **kwargs):
     """
