@@ -69,7 +69,7 @@ class Page:
             'prop': 'revisions',
             'rvprop': 'content',
             'rvlimit': 1
-        }, auto_filter=False)
+        }, auto_filter=False, query_continue=False)
         page_id = int(result['query']['pageids'][0])
         if page_id > 0:
             self.exists = True
@@ -192,7 +192,7 @@ class APIRequest:
     def __init__(self, api, data={}, method='auto', auto=True, auto_filter=True,
                  headers=None, query_continue=True):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
-        if data['action'] == 'query' and 'continue' not in data:
+        if data['action'] == 'query' and 'continue' not in data and query_continue:
             data['continue'] = ''
         
         self.api, self.data, self.method, self.enable_auto_filter, self.headers = \
