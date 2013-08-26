@@ -5,6 +5,7 @@ Utilities
 # Consistency
 from __future__ import print_function
 
+import copy
 import getpass
 import re
 import sys
@@ -111,6 +112,7 @@ def recursive_merge(d1, d2):
     """
     Merges two dictionaries and their sub-dictionaries and/or lists
     """
+    d1, d2 = copy.copy(d1), copy.copy(d2)
     result = {} if isinstance(d1, dict) or isinstance(d2, dict) else []
     keys = (list(d1.keys()) if isinstance(d1, dict) else range(len(d1))) + \
            (list(d2.keys()) if isinstance(d2, dict) else range(len(d2)))
