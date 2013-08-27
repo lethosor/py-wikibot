@@ -2,6 +2,9 @@
 template_subst
 
 Replaces all occurences of a template with the substituted template
+
+TODO:
+* Update to use actual name of the Template namespace by default, if not "Template"
 """
 
 import re
@@ -10,7 +13,7 @@ import wikibot
 import wikibot.bot as bot
 
 class TemplateSubstTask(bot.Task):
-    def __init__(self, user, template_name, summary='Substituting {template_name} ({0}/{1})'):
+    def __init__(self, user, template_name, summary='Substituting {template_name} ({0}/{1})', template_ns='Template'):
         super(TemplateSubstTask, self).__init__(user, TemplateSubstJob)
         if ':' in template_name:
             template_ns, template_name = template_name.split(':', 1)
