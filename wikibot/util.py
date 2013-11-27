@@ -8,6 +8,7 @@ from __future__ import print_function
 import copy
 import getpass
 import re
+import readline
 import sys
 
 py_version = sys.version_info.major
@@ -30,15 +31,12 @@ def logf(*args):
     sys.stdout.write(' '.join([str(x) for x in args]))
     sys.stdout.flush()
 
+_input = input if py_version == 3 else raw_input
+
 def input(prompt='', visible=True):
     if not visible:
         return getpass.getpass(prompt)
-    
-    logf(prompt)
-    if visible:
-        return sys.stdin.readline().rstrip('\n')
-    else:
-        return getpass.getpass('')
+    return _input(prompt)
 
 def get_file(prompt='File: ', exists=True, path=''):
     """
