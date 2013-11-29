@@ -18,17 +18,50 @@ if py_version == 2:
 else:
     import urllib.parse as urllib
 
+try:
+    import termcolor
+except ImportError:
+    termcolor = None
+
 class DynamicList(list):
     def __setitem__(self, i, v):
         # Fill with None
         self[len(self):i+1] = [None for x in range(i+1-len(self))]
         super(DynamicList, self).__setitem__(i, v)
 
+_log_color_split = re.compile('\s*[,/]?\s*')
+_log_opts = re.compile('<[^>]*>')
+def _log_parse(*args):
+    s = ' '.join([str(x) for x in args])
+    if termcolor is not None:
+        parts = s.replace('\01', '').replace('<', '\01<').split('\01')
+        s = ''
+        for p in parts:
+            if '>' in p:
+                opts, text = p.split('>', 1)
+                opts = _log_color_split.split(opts[1:])
+                args, attrs = [None, None], []
+                for opt in opts:
+                    opt = opt.lower()
+                    if opt in termcolor.COLORS:
+                        args[0] = opt
+                    elif opt in termcolor.HIGHLIGHTS:
+                        args[1] = opt
+                    elif opt in termcolor.ATTRIBUTES:
+                        attrs.append(opt)
+                s += termcolor.colored(text, *args, **{'attrs': attrs})
+            else:
+                s += p
+    else:
+        # Remove <...> tags if termcolor isn't available
+        s = _log_opts.sub('', s)
+    return s
+
 def log(*args):
-    print(' '.join([str(x) for x in args]))
+    print(_log_parse(*args))
 
 def logf(*args):
-    sys.stdout.write(' '.join([str(x) for x in args]))
+    sys.stdout.write(_log_parse(*args))
     sys.stdout.flush()
 
 _input = input if py_version == 3 else raw_input
