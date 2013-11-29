@@ -11,4 +11,4 @@ if __name__ == '__main__':
     try:
         wikibot.command_line.create_new_user()
     except:
-        wikibot.util.log('\nUser creation failed.')
+        wikibot.util.log('\nUser creation failed.', type='fatal')
