@@ -65,7 +65,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--list', help='List users', required=False, action='store_true')
     parser.add_argument('-u', '--user', help='List a specific user', required=False)
-    parser.add_argument('-t', '--test', '--login', help='Attempt a login', required=False)
+    parser.add_argument('-t', '--test', '--login', help='Attempt a login', required=False,
+                        action='store_true')
     args = parser.parse_args()
     if args.list:
         path = get_creds_path()
@@ -83,5 +84,22 @@ if __name__ == '__main__':
                 user_info = importlib.import_module('wikibot.creds.{0}.{1}'.format(d, f))
                 username = ('<bold, green>' + user_info.username if hasattr(user_info, 'username')
                             else '<bold, red>Unknown user')
-                util.log('*   User: <bold,green>%s<> (<bold>%s:%s<>)' % (username, d, f))
-        
+                util.log('*   User: %s<> (<bold>%s:%s<>)' % (username, d, f))
+    if args.user:
+        if not ':' in args.user:
+            util.die('Invalid user id!', type='fatal')
+        d, f = args.user.split(':')
+        try:
+            site_info = importlib.import_module('wikibot.creds.{0}.__siteinfo__'.format(d))
+            user_info = importlib.import_module('wikibot.creds.{0}.{1}'.format(d, f))
+        except ImportError:
+            util.die('Credentials not found for ' + args.user, type='fatal')
+        util.log('User: <bold, green>%s <>(<bold>%s<>)' % (f, args.user))
+        util.log('    URL: <blue, underline>' + site_info.url)
+        util.log('    Username: <bold>' + user_info.username)
+        if args.test:
+            util.logf('Attempting to log in...\r', type='progress')
+            try:
+                user = load_user(args.user)
+            except Exception:
+                util.log('Unable to log in as ' + args.user, type='error')

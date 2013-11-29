@@ -106,8 +106,8 @@ def get_file(prompt='File: ', exists=True, path=''):
         path = ''
     return path
 
-def die(*args):
-    log(*args)
+def die(*args, **kwargs):
+    log(*args, **kwargs)
     sys.exit()
 
 def dict_auto_filter(obj):
