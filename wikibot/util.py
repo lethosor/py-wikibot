@@ -22,6 +22,9 @@ try:
     import termcolor
 except ImportError:
     termcolor = None
+if not sys.stdout.isatty():
+    # Prevent coloring of non-tty output
+    termcolor = None
 
 class DynamicList(list):
     def __setitem__(self, i, v):
