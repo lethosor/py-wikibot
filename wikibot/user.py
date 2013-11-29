@@ -9,21 +9,15 @@ import wikibot.network as network
 import wikibot.util as util
 
 class UserError(Exception):
-    """
-    A base exception class
-    """
+    """ Base exception class """
     pass
 
 class UserLoginError(UserError):
-    """
-    An error while logging in a user
-    """
+    """ An error while logging in a user """
     pass
 
 class UserPermissionError(UserError):
-    """
-    Indicates a lack of sufficient privileges
-    """
+    """ Indicates a lack of sufficient privileges """
     pass
 
 class User:
