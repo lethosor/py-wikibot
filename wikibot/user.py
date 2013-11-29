@@ -56,9 +56,9 @@ class User:
         }, ret='request')
         val_2 = req_2.result.value
         if val_2['result'] == 'Success':
-            util.log("Login as %s successful" % self.username)
+            util.log("Login as %s successful" % self.username, type="ok")
         else:
-            util.log("Login as %s failed: %s" % (self.username, val_2['result']))
+            util.log("Login as %s failed: %s" % (self.username, val_2['result']), type="error")
             return False
         
         self.logged_in = True
@@ -73,6 +73,7 @@ class User:
     
     def logout(self):
         self.api_request({'action':'logout'})
+        util.log('Logged out %s' % self.username, type='info')
         self.logged_in = False
     
     def init(self):
@@ -84,7 +85,7 @@ class User:
             })['edittoken']
         except Exception as e:
             raise UserError("Could not initialize user: %s" % e)
-        util.log('User %s initialized successfully' % self.username)
+        util.log('User %s initialized successfully' % self.username, type="success")
     
     
     def api_request(self, *args, **kwargs):

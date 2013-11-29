@@ -31,8 +31,19 @@ class DynamicList(list):
 
 _log_color_split = re.compile('\s*[,/]?\s*')
 _log_opts = re.compile('<[^>]*>')
-def _log_parse(*args):
+_log_types = {
+    'error': 'red, bold',
+    'fatal': 'white, on_red, bold',
+    'warn': 'yellow, bold',
+    'ok': 'green',
+    'success': 'green, bold',
+    'info': 'blue',
+    'progress': 'cyan',
+}
+def _log_parse(*args, **kwargs):
     s = ' '.join([str(x) for x in args])
+    if 'type' in kwargs and kwargs['type'] in _log_types:
+        s = '<' + _log_types[kwargs['type']] + '>' + s
     if termcolor is not None:
         parts = s.replace('\01', '').replace('<', '\01<').split('\01')
         s = ''
@@ -57,11 +68,11 @@ def _log_parse(*args):
         s = _log_opts.sub('', s)
     return s
 
-def log(*args):
-    print(_log_parse(*args))
+def log(*args, **kwargs):
+    print(_log_parse(*args, **kwargs))
 
-def logf(*args):
-    sys.stdout.write(_log_parse(*args))
+def logf(*args, **kwargs):
+    sys.stdout.write(_log_parse(*args, **kwargs))
     sys.stdout.flush()
 
 _input = input if py_version == 3 else raw_input
