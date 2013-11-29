@@ -2,6 +2,7 @@
 Credential storage/retrieval
 """
 
+import argparse
 import importlib
 import os
 
@@ -58,3 +59,29 @@ password = "{password}"
     f = open(path, 'w')
     f.write(string)
     f.close()
+
+if __name__ == '__main__':
+    util = wikibot.util
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--list', help='List users', required=False, action='store_true')
+    parser.add_argument('-u', '--user', help='List a specific user', required=False)
+    parser.add_argument('-t', '--test', '--login', help='Attempt a login', required=False)
+    args = parser.parse_args()
+    if args.list:
+        path = get_creds_path()
+        dirs = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))
+                and not d.startswith('_')]
+        util.log('<bold, green, underline>List of users:')
+        for d in dirs:
+            p = os.path.join(path, d)
+            files = [f.replace('.py', '') for f in os.listdir(p)
+                     if os.path.isfile(os.path.join(p, f)) and f.endswith('.py')
+                     and not f.startswith('_')]
+            site_info = importlib.import_module('wikibot.creds.{0}.__siteinfo__'.format(d))
+            util.log('<bold>%s<> (<bold, blue, underline>%s<>)' % (d, site_info.url))
+            for f in files:
+                user_info = importlib.import_module('wikibot.creds.{0}.{1}'.format(d, f))
+                username = ('<bold, green>' + user_info.username if hasattr(user_info, 'username')
+                            else '<bold, red>Unknown user')
+                util.log('*   User: <bold,green>%s<> (<bold>%s:%s<>)' % (username, d, f))
+        
