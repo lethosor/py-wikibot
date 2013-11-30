@@ -8,6 +8,7 @@ from __future__ import print_function
 import copy
 import getpass
 import re
+import readline
 import sys
 
 py_version = sys.version_info.major
@@ -17,28 +18,93 @@ if py_version == 2:
 else:
     import urllib.parse as urllib
 
+try:
+    import termcolor
+except ImportError:
+    termcolor = None
+if not sys.stdout.isatty():
+    # Prevent coloring of non-tty output
+    termcolor = None
+
 class DynamicList(list):
     def __setitem__(self, i, v):
         # Fill with None
         self[len(self):i+1] = [None for x in range(i+1-len(self))]
         super(DynamicList, self).__setitem__(i, v)
 
-def log(*args):
-    print(' '.join([str(x) for x in args]))
+_log_color_split = re.compile('\s*[,/]?\s*')
+_log_opts = re.compile('<[^>]*>')
+_log_types = {
+    'error': 'red, bold',
+    'fatal': 'white, on_red, bold',
+    'warn': 'yellow, bold',
+    'ok': 'green',
+    'success': 'green, bold',
+    'info': 'blue',
+    'progress': 'cyan',
+}
+def _log_parse(*args, **kwargs):
+    s = ' '.join([str(x) for x in args])
+    if 'type' in kwargs and kwargs['type'] in _log_types:
+        s = '<' + _log_types[kwargs['type']] + '>' + s
+    if termcolor is not None:
+        parts = s.replace('\01', '').replace('<', '\01<').split('\01')
+        s = ''
+        for p in parts:
+            if '>' in p:
+                opts, text = p.split('>', 1)
+                opts = _log_color_split.split(opts[1:])
+                args, attrs = [None, None], []
+                for opt in opts:
+                    opt = opt.lower()
+                    if opt in termcolor.COLORS:
+                        args[0] = opt
+                    elif opt in termcolor.HIGHLIGHTS:
+                        args[1] = opt
+                    elif opt in termcolor.ATTRIBUTES:
+                        attrs.append(opt)
+                s += termcolor.colored(text, *args, **{'attrs': attrs})
+            else:
+                s += p
+    else:
+        # Remove <...> tags if termcolor isn't available
+        s = _log_opts.sub('', s)
+    return s
 
-def logf(*args):
-    sys.stdout.write(' '.join([str(x) for x in args]))
+def log(*args, **kwargs):
+    print(_log_parse(*args, **kwargs))
+
+def logf(*args, **kwargs):
+    sys.stdout.write(_log_parse(*args, **kwargs))
     sys.stdout.flush()
 
-def input(prompt='', visible=True):
-    if not visible:
-        return getpass.getpass(prompt)
-    
-    logf(prompt)
-    if visible:
-        return sys.stdin.readline().rstrip('\n')
-    else:
-        return getpass.getpass('')
+_input = input if py_version == 3 else raw_input
+
+def input(prompt='', visible=True, input=''):
+    """
+    Enhanced implementation of input (independent of Python version)
+    Similar to Python 2's "raw_input" and Python 3's "input"
+
+    prompt (string): The prompt to display (on the same line as the text)
+    visible (bool): Enables/disables echoing of input. Note that "False"
+        enforces a tty (i.e. it will read from the command line, not a file).
+    input (string): Formatting to apply to the input string (only when visible)
+        e.g. "red, bold" (angle brackets are not required)
+    """
+    prompt = _log_parse(prompt)
+    if input and termcolor is not None:
+        input = input.replace('<', '').replace('>', '')
+        input = _log_parse('<%s>' % input).replace(termcolor.RESET, '')
+    try:
+        if not visible:
+            text = getpass.getpass(prompt)
+        else:
+            text = _input(prompt + input)
+    except:
+        logf('<>')  # Reset terminal
+        raise  # Allow exception to propagate
+    logf('<>')
+    return text
 
 def get_file(prompt='File: ', exists=True, path=''):
     """
@@ -64,8 +130,8 @@ def get_file(prompt='File: ', exists=True, path=''):
         path = ''
     return path
 
-def die(*args):
-    log(*args)
+def die(*args, **kwargs):
+    log(*args, **kwargs)
     sys.exit()
 
 def dict_auto_filter(obj):

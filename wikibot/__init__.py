@@ -3,8 +3,6 @@ Python MediaWiki bot framework
 
 """
 
-import sys
-
 # Submodules
 import wikibot.api
 import wikibot.bot
@@ -16,7 +14,3 @@ import wikibot.util
 
 # Credentials
 import wikibot.creds
-
-def init():
-    command_line.parse_args(sys.argv)
-

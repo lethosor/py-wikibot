@@ -65,9 +65,9 @@ def get_user_creds():
             try:
                 api = wikibot.api.API(url)
             except wikibot.api.ApiInvalidResponseError:
-                util.log('Invalid URL - use the "script path" URL found at Special:Version on your wiki.')
+                util.log('Invalid URL - use the "script path" URL found at Special:Version on your wiki.', type='error')
             except:
-                util.log('An error occured while connecting to the server. Please check the URL.')
+                util.log('An error occured while connecting to the server. Please check the URL.', type='error')
             else:
                 break
         while 1:
@@ -76,22 +76,22 @@ def get_user_creds():
             user = wikibot.user.User(url, username, password)
             if user.logged_in:
                 break
-            util.log('Incorrect username/password. Please try again.')
+            util.log('Incorrect username/password. Please try again.', type='error')
         util.log('''
         Choose a unique identifier for this site (for example, "enwiki" would be
         appropriate for the English Wikipedia).'''.replace('  ', ''))
         while 1:
             ident = util.input('Identifier: ')
             if ':' in ident:
-                util.log('Colons are not allowed in site identifiers.')
+                util.log('Colons are not allowed in site identifiers.', type='warn')
             elif not ident:
                 pass
             else:
                 break
         user_id = ident + ':' + username
-        util.log('Creating user %s...' % user_id)
+        util.log('Creating user %s...' % user_id, type='progress')
     except KeyboardInterrupt:
-        util.log('\nUser creation aborted.')
+        util.log('\nUser creation aborted.', type='error')
     
     return {
         'site_url': url,
@@ -103,7 +103,7 @@ def get_user_creds():
     }
     
 def create_new_user():
-    util.log('Creating new user')
+    util.log('Creating new user', type='progress')
     ui = get_user_creds()
     wikibot.cred.save_site_file(ui['site_id'], ui['site_url'])
     wikibot.cred.save_user_file(ui['site_id'], ui['username'], ui['password'])
