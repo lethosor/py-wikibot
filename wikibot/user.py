@@ -10,7 +10,9 @@ import wikibot.util as util
 
 class UserError(Exception):
     """ Base exception class """
-    pass
+    def __init__(self, *args):
+        super(UserError, self).__init__(*args)
+        util.log(*args, type='error')
 
 class UserLoginError(UserError):
     """ An error while logging in a user """
@@ -31,9 +33,11 @@ class User:
         self.site, self.username, self.password = site, username, password
         
         if api_obj is None:
-            api_obj = api.API(site)
-        
-        self.api = api_obj
+            try:
+                api_obj = api.API(site)
+                self.api = api_obj
+            except api.ApiError as e:
+                raise UserError('Could not initialize API: %s' % e)
         
         self.cookies = network.CookieManager()
         
@@ -42,23 +46,27 @@ class User:
     
     
     def login(self, username='', password='', auto_init=True):
-        req_1 = self.api_request({
-            'action': 'login',
-            'lgname': self.username,
-            'lgpassword': self.password
-        }, ret='request')
-        val_1 = req_1.result.value
-        req_2 = self.api_request({
-            'action': 'login',
-            'lgname': self.username,
-            'lgpassword': self.password,
-            'lgtoken': val_1['token']
-        }, ret='request')
-        val_2 = req_2.result.value
-        if val_2['result'] == 'Success':
-            util.log("Login as %s successful" % self.username, type="ok")
-        else:
-            util.log("Login as %s failed: %s" % (self.username, val_2['result']), type="error")
+        try:
+            req_1 = self.api_request({
+                'action': 'login',
+                'lgname': self.username,
+                'lgpassword': self.password
+            }, ret='request')
+            val_1 = req_1.result.value
+            req_2 = self.api_request({
+                'action': 'login',
+                'lgname': self.username,
+                'lgpassword': self.password,
+                'lgtoken': val_1['token']
+            }, ret='request')
+            val_2 = req_2.result.value
+            if val_2['result'] == 'Success':
+                util.log("Login as %s successful" % self.username, type="ok")
+            else:
+                raise UserLoginError("Login as %s failed: %s" % (self.username, val_2['result']), type="error")
+                return False
+        except api.ApiError as e:
+            raise UserLoginError('Could not log in: %s' % e)
             return False
         
         self.logged_in = True
