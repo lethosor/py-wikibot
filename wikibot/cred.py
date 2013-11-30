@@ -7,6 +7,7 @@ import importlib
 import os
 
 import wikibot
+util = wikibot.util
 
 get_user = wikibot.command_line.get_user
 
@@ -20,7 +21,11 @@ def load_user(identifier):
         creds = importlib.import_module('wikibot.creds.{0}.{1}'.format(site_name, user_name))
     except ImportError:
         raise ImportError('Credentials for {0} not found'.format(identifier))
-    user = wikibot.user.User(site_info.url, creds.username, creds.password)
+    try:
+        user = wikibot.user.User(site_info.url, creds.username, creds.password)
+    except wikibot.user.UserError as e:
+        util.log('Could not load user "%s": %s' % (identifier, e), type='error')
+        raise
     return user
 
 def get_creds_path(*args):
@@ -61,7 +66,6 @@ password = "{password}"
     f.close()
 
 if __name__ == '__main__':
-    util = wikibot.util
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--list', help='List users', required=False, action='store_true')
     parser.add_argument('-u', '--user', help='List a specific user', required=False)
