@@ -8,8 +8,12 @@ import importlib
 
 import wikibot
 util = wikibot.util
+command_line = wikibot.command_line
 
 def main():
+    command_line.parser.add_argument('--modules', action='append',
+                                     help='Comma-separated list of modules to import')
+    args = command_line.parse_args()
     util.log('Starting interactive wikibot shell...', type='info')
     
     c_vars = {}  # Console variables
@@ -18,15 +22,14 @@ def main():
         if m not in modules and not m.startswith('__') and m != 'wikibot':
             modules.append('wikibot.' + m)
     
-    args = wikibot.command_line.parse_args()
-    if 'modules' in args:
+    if args.modules:
         try:
-            modules.extend(args['modules'].split(','))
+            modules.extend(','.join(args.modules).split(','))
         except Exception:
             util.log('Invalid --modules argument', type='error')
     
     user_exists = False
-    if 'user' in args or 'u' in args or 'login' in args:
+    if args.user:
         try:
             util.logf('Logging in...\r', type='progress')
             user = wikibot.cred.get_user()
