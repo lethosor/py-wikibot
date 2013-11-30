@@ -9,6 +9,7 @@ import wikibot.bot
 import wikibot.command_line
 import wikibot.cred
 import wikibot.network
+import wikibot.ui
 import wikibot.user
 import wikibot.util
 
