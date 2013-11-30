@@ -9,7 +9,7 @@ import importlib
 import wikibot
 util = wikibot.util
 
-if __name__ == '__main__':
+def main():
     util.log('Starting interactive wikibot shell...', type='info')
     
     modules = ['sys', 'os', 're']
@@ -66,5 +66,6 @@ if __name__ == '__main__':
             user.logout()
         else:
             util.log('User already logged out.', type='info')
-else:
-    util.log('Attempted to import interactive shell!', type='warn')
+
+if __name__ == '__main__':
+    main()
