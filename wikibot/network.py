@@ -95,7 +95,7 @@ class CookieManager:
         if key in self.cookies:
             return self.cookies[key]
         else:
-            raise KeyError('No cookie found with name "%s"' & key)
+            raise KeyError('No cookie found with name "%s"' % key)
     
     def __setitem__(self, key, val):
         self.cookies[key] = val
@@ -111,7 +111,7 @@ class CookieManager:
         """
         l = []
         for i in self.cookies:
-            l.append("%s=%s" % (i, self.cookies[i]))
+            l.append(util.qs_encode({i: self.cookies[i]}))
         return [("Cookie", "; ".join(l))]
     
 
