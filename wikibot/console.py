@@ -12,14 +12,11 @@ util = wikibot.util
 def main():
     util.log('Starting interactive wikibot shell...', type='info')
     
-    modules = ['sys', 'os', 're']
+    c_vars = {}  # Console variables
+    modules = ['sys', 'os', 're', 'wikibot', 'termcolor']
     for m in dir(wikibot):
-        if m not in modules and not m.startswith('__') and m not in globals():
+        if m not in modules and not m.startswith('__') and m != 'wikibot':
             modules.append('wikibot.' + m)
-    
-    c_vars = globals().copy()
-    c_vars.update(locals())
-    # Variables used below this line are not accessible in the shell
     
     args = wikibot.command_line.parse_args()
     if 'modules' in args:
