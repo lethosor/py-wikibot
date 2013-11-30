@@ -80,10 +80,31 @@ def logf(*args, **kwargs):
 
 _input = input if py_version == 3 else raw_input
 
-def input(prompt='', visible=True):
-    if not visible:
-        return getpass.getpass(prompt)
-    return _input(prompt)
+def input(prompt='', visible=True, input=''):
+    """
+    Enhanced implementation of input (independent of Python version)
+    Similar to Python 2's "raw_input" and Python 3's "input"
+
+    prompt (string): The prompt to display (on the same line as the text)
+    visible (bool): Enables/disables echoing of input. Note that "False"
+        enforces a tty (i.e. it will read from the command line, not a file).
+    input (string): Formatting to apply to the input string (only when visible)
+        e.g. "red, bold" (angle brackets are not required)
+    """
+    prompt = _log_parse(prompt)
+    if input and termcolor is not None:
+        input = input.replace('<', '').replace('>', '')
+        input = _log_parse('<%s>' % input).replace(termcolor.RESET, '')
+    try:
+        if not visible:
+            text = getpass.getpass(prompt)
+        else:
+            text = _input(prompt + input)
+    except:
+        logf('<>')  # Reset terminal
+        raise  # Allow exception to propagate
+    logf('<>')
+    return text
 
 def get_file(prompt='File: ', exists=True, path=''):
     """
