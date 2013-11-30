@@ -35,7 +35,9 @@ def main():
             user = wikibot.cred.get_user()
         except ImportError:
             wikibot.util.die('User credentials for "%s" not found' % args['user'],
-                             type='fatal')
+                             type='error')
+        except wikibot.user.UserError as e:
+            wikibot.util.die('Failed to log in: %s' % e, type='fatal')
         user_exists = True
         c_vars.update({'user': user})
         wikibot.util.log("<bold>User available as 'user'")
@@ -51,7 +53,7 @@ def main():
                          type='progress')
             else:
                 util.log('Imported module "%s" as "%s": Scope conflict' % (m, name), type='warn')
-        except (ImportError, ValueError) as e:
+        except (ImportError, ValueError, TypeError) as e:
             util.log('Failed to import module "%s": %s' % (m, str(e)), type='error')
     
     shell = code.InteractiveConsole(c_vars)
