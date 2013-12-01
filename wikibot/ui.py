@@ -77,10 +77,13 @@ class IndefProgressBar:
         self.index -= 1
         if self.index < 0:
             self.index = self.bar_len - 1
-        util.logf('\r<bold,{color}>[<>{bar}<bold,{color}>]'.format(
-            bar = self.get_bar(),
-            color = self.color,
-        ))
+        if sys.stdout.isatty():
+            util.logf('\r<bold,{color}>[<>{bar}<bold,{color}>]'.format(
+                bar = self.get_bar(),
+                color = self.color,
+            ))
+        else:
+            util.logf('.')
     
     def get_bar(self, index=None, width=None):
         if index is None:
