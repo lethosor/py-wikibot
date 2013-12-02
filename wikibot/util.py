@@ -20,11 +20,19 @@ else:
 
 try:
     import termcolor
+    if sys.platform == 'win32':
+        # Only enable termcolor on Windows if colorama is available
+        try:
+            import colorama
+            colorama.init()
+        except ImportError:
+            colorama = termcolor = None
 except ImportError:
     termcolor = None
 if not sys.stdout.isatty():
     # Prevent coloring of non-tty output
     termcolor = None
+
 
 class DynamicList(list):
     def __setitem__(self, i, v):
