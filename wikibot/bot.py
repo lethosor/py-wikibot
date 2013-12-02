@@ -7,6 +7,7 @@ __metaclass__ = type
 import time
 import sys
 
+import wikibot
 import wikibot.util as util
 
 class Task:
@@ -48,13 +49,12 @@ class Task:
         util.log("Starting jobs")
         start_time = time.time()
         pages = self.get_pages()
-        total = len(pages)
-        current = 0
+        self.progress_bar = wikibot.ui.ProgressBar(steps=len(pages), width=1000)
+        count = [0, len(pages)]
         for page_name in pages:
-            current += 1
-            count = (current, total)
-            util.logf("\r%i/%i" % count)
+            count[0] += 1
             self.run_job(page_name, count)
+            self.progress_bar.inc()
         end_time = time.time()
         util.log("\nFinished")
     
