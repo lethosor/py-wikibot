@@ -9,10 +9,32 @@ import importlib
 import wikibot
 util = wikibot.util
 
+class CVars(dict):
+    class FakeQuitter:
+        def __repr__(self):
+            return util._log_parse('Use "sys.exit()" or Ctrl-D (EOF) to exit', type='warn')
+        __str__ = __repr__
+        def __call__(self):
+            util.log(str(self))
+    def __init__(self, *args, **kwargs):
+        super(CVars, self).__init__(*args, **kwargs)
+    def __getitem__(self, key):
+        if key == 'cvars':
+            return self
+        if key in ('quit', 'exit'):
+            return self.FakeQuitter()
+        if hasattr(__builtins__, key):
+            return getattr(__builtins__, key)
+        try:
+            return super(CVars, self).__getitem__(key)
+        except KeyError:
+            util.log('"%s" is not defined in this scope' % key, type='fatal')
+            raise NameError()
+
 def main():
     util.log('Starting interactive wikibot shell...', type='info')
     
-    c_vars = {}  # Console variables
+    c_vars = CVars()  # Console variables
     modules = ['sys', 'os', 're', 'wikibot', 'termcolor']
     for m in dir(wikibot):
         if m not in modules and not m.startswith('__') and m != 'wikibot':
