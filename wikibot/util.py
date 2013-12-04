@@ -163,6 +163,10 @@ def dict_auto_filter(obj):
 
 
 def dict_extend(d1, d2):
+    """
+    Merges dictionaries 'd1' and 'd2'
+    For keys that exist in both, the value from d2 is used
+    """
     return dict(d1, **d2)
 
 def dict_recursive_fetch_list(d, key):
