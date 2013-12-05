@@ -20,11 +20,19 @@ else:
 
 try:
     import termcolor
+    if sys.platform == 'win32':
+        # Only enable termcolor on Windows if colorama is available
+        try:
+            import colorama
+            colorama.init()
+        except ImportError:
+            colorama = termcolor = None
 except ImportError:
     termcolor = None
 if not sys.stdout.isatty():
     # Prevent coloring of non-tty output
     termcolor = None
+
 
 class DynamicList(list):
     def __setitem__(self, i, v):
@@ -47,7 +55,9 @@ def _log_parse(*args, **kwargs):
     s = ' '.join([str(x) for x in args])
     if 'type' in kwargs and kwargs['type'] in _log_types:
         s = '<' + _log_types[kwargs['type']] + '>' + s
-    if termcolor is not None:
+    if 'color' not in kwargs:
+        kwargs['color'] = True
+    if termcolor is not None and kwargs['color']:
         parts = s.replace('\01', '').replace('<', '\01<').split('\01')
         s = ''
         for p in parts:
@@ -153,6 +163,10 @@ def dict_auto_filter(obj):
 
 
 def dict_extend(d1, d2):
+    """
+    Merges dictionaries 'd1' and 'd2'
+    For keys that exist in both, the value from d2 is used
+    """
     return dict(d1, **d2)
 
 def dict_recursive_fetch_list(d, key):
