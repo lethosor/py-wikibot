@@ -33,7 +33,6 @@ if not sys.stdout.isatty():
     # Prevent coloring of non-tty output
     termcolor = None
 
-
 class DynamicList(list):
     def __setitem__(self, i, v):
         # Fill with None
@@ -242,18 +241,27 @@ def str_format(string, *args, **kwargs):
     return string.format(*args, **kwargs)
 
 
-def qs_decode(s):
-    d = {}
-    a = s.split('&')
-    for i in a:
-        b = i.split('=',1)
-        d[urllib.unquote(b[0])] = urllib.unquote(b[1])
-    return d
+def qs_decode(string):
+    data = {}
+    a = string.split('&')
+    if py_version == 2:
+        for i in a:
+            b = i.split('=',1)
+            data[urllib.unquote(b[0]).decode('utf-8')] = urllib.unquote(b[1]).decode('utf-8')
+    elif py_version == 3:
+        for i in a:
+            b = i.split('=',1)
+            data[urllib.unquote(b[0])] = urllib.unquote(b[1])
+    return data
     
-def qs_encode(d):
-    data_string = ''
-    for i in d:
-        data_string += "&%s=%s" % (urllib.quote(i), urllib.quote(str(d[i])))
-    
-    data_string = data_string[1:]
-    return data_string
+def qs_encode(data):
+    string = ''
+    if py_version == 2:
+        for i in data:
+            string += "&%s=%s" % (urllib.quote(i).encode('utf-8'),
+                                  urllib.quote(unicode(data[i]).encode('utf-8')))
+    elif py_version == 3:
+        for i in data:
+            string += "&%s=%s" % (urllib.quote(i), urllib.quote(str(data[i])))
+    string = string[1:]
+    return string
