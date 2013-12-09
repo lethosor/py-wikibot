@@ -127,7 +127,27 @@ class Category(Page):
         super(Category, self).__init__(title, *args, **kwargs)
     
     def fetch_pages(self):
-        pass
+        result = self.user.api_request({
+            'list': 'categorymembers',
+            'cmtitle': self.title
+        })
+        return [p['title'] for p in result['categorymembers']]
+    
+    def __contains__(self, page):
+        return bool(page in self.pages)
+    
+    def __len__(self):
+        return self.members
+    
+    @property
+    def pages(self):
+        return self.data['pages']
+    
+    @property
+    def members(self):
+        return len(self.data['pages'])
+    
+    
 
     
 class ApiError(Exception):
