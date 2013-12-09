@@ -9,13 +9,20 @@ import sys
 import wikibot
 util = wikibot.util
 
+class ArgNamespace(argparse.Namespace):
+    def __getitem__(self, *args):
+        return self.__getattribute__(*args)
+
+
 class ArgumentParser(argparse.ArgumentParser):
     def parse_args(self, *args, **kwargs):
-        args = super(ArgumentParser, self).parse_args(*args, **kwargs)
+        namespace = ArgNamespace()
+        args = super(ArgumentParser, self).parse_args(namespace=namespace, *args, **kwargs)
         if args.no_color:
             # Disable coloring of output
             util.termcolor = None
         return args
+
 
 parser = ArgumentParser('(script)')
 parser.add_argument('--user', help='User', required=False)
