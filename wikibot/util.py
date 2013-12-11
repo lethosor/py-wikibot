@@ -50,6 +50,8 @@ _log_types = {
     'success': 'green, bold',
     'info': 'blue',
     'progress': 'cyan',
+    'bold': 'bold',
+    'underline': 'underline',
 }
 def _log_parse(*args, **kwargs):
     s = ' '.join([str(x) for x in args])
@@ -87,6 +89,11 @@ def log(*args, **kwargs):
 def logf(*args, **kwargs):
     sys.stdout.write(_log_parse(*args, **kwargs))
     sys.stdout.flush()
+
+_debug = ('--debug' in sys.argv)
+def debug(*args, **kwargs):
+    if _debug:
+        return log(*args, **kwargs)
 
 _input = input if py_version == 3 else raw_input
 

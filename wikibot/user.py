@@ -97,22 +97,27 @@ class User:
     
     
     def api_request(self, *args, **kwargs):
+        if len(args):
+            util.debug(str(args[0]), type='info')
         cookie_headers = self.cookies.get_headers()
         if 'headers' in kwargs:
             kwargs['headers'].extend(cookie_headers)
         else:
             kwargs['headers'] = cookie_headers
-        old_ret = 'value'
+        ret = 'value'
         if 'ret' in kwargs:
-            old_ret = kwargs['ret']
+            ret = kwargs['ret']
         kwargs['ret'] = 'request'
         req = self.api.request(*args, **kwargs)
         self.cookies.set_from_headers(req.result.headers)
-        if old_ret == 'value':
-            return req.result.value
-        elif old_ret == 'result':
-            return req.result
-        return req
+        if ret == 'value':
+            r = req.result.value
+        elif ret == 'result':
+            r = req.result
+        else:
+            r = req
+        util.debug(str(r), type='bold')
+        return r
         
     def get_page(self, page_name, *args, **kwargs):
         return api.Page(page_name, self, *args,**kwargs)

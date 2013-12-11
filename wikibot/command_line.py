@@ -28,6 +28,8 @@ parser = ArgumentParser('(script)')
 parser.add_argument('--user', help='User', required=False)
 parser.add_argument('--no-color', help='Disable color', required=False,
                     action='store_true')
+parser.add_argument('--debug', help='Enable debug mode', required=False,
+                    action='store_true')
 
 parse_args = parser.parse_args
 
