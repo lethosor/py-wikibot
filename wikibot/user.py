@@ -98,7 +98,14 @@ class User:
     
     def api_request(self, *args, **kwargs):
         if len(args):
-            util.debug(str(args[0]), type='info')
+            try:
+                a = args[0].copy()
+                for k in a:
+                    if 'password' in k:
+                        a[k] = '<yellow>(Hidden)<blue>'
+                util.debug('<blue>', str(a))
+            except Exception:
+                util.debug('<yellow>Query not displayed')
         cookie_headers = self.cookies.get_headers()
         if 'headers' in kwargs:
             kwargs['headers'].extend(cookie_headers)

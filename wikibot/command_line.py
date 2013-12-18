@@ -18,9 +18,6 @@ class ArgumentParser(argparse.ArgumentParser):
     def parse_args(self, *args, **kwargs):
         namespace = ArgNamespace()
         args = super(ArgumentParser, self).parse_args(namespace=namespace, *args, **kwargs)
-        if args.no_color:
-            # Disable coloring of output
-            util.termcolor = None
         return args
 
 
