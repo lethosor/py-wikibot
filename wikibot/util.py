@@ -29,9 +29,10 @@ try:
             colorama = termcolor = None
 except ImportError:
     termcolor = None
-if not sys.stdout.isatty():
-    # Prevent coloring of non-tty output
+if not sys.stdout.isatty() or '--no-color' in sys.argv:
+    # Prevent coloring of output with  --no-color or if stdout is not a tty
     termcolor = None
+
 
 class DynamicList(list):
     def __setitem__(self, i, v):
@@ -49,9 +50,11 @@ _log_types = {
     'success': 'green, bold',
     'info': 'blue',
     'progress': 'cyan',
+    'bold': 'bold',
+    'underline': 'underline',
 }
 def _log_parse(*args, **kwargs):
-    s = ' '.join([str(x) for x in args])
+    s = ' '.join([str(x) for x in args]) + '<>'
     if 'type' in kwargs and kwargs['type'] in _log_types:
         s = '<' + _log_types[kwargs['type']] + '>' + s
     if 'color' not in kwargs:
@@ -62,7 +65,12 @@ def _log_parse(*args, **kwargs):
         for p in parts:
             if '>' in p:
                 opts, text = p.split('>', 1)
-                opts = _log_color_split.split(opts[1:])
+                if opts[1:2] == '+':
+                    opts = opts[2:]
+                else:
+                    opts = opts[1:]
+                    s += termcolor.RESET
+                opts = _log_color_split.split(opts)
                 args, attrs = [None, None], []
                 for opt in opts:
                     opt = opt.lower()
@@ -72,7 +80,7 @@ def _log_parse(*args, **kwargs):
                         args[1] = opt
                     elif opt in termcolor.ATTRIBUTES:
                         attrs.append(opt)
-                s += termcolor.colored(text, *args, **{'attrs': attrs})
+                s += termcolor.colored(text, *args, **{'attrs': attrs}).replace(termcolor.RESET, '')
             else:
                 s += p
     else:
@@ -86,6 +94,11 @@ def log(*args, **kwargs):
 def logf(*args, **kwargs):
     sys.stdout.write(_log_parse(*args, **kwargs))
     sys.stdout.flush()
+
+_debug = ('--debug' in sys.argv)
+def debug(*args, **kwargs):
+    if _debug:
+        return log(*args, **kwargs)
 
 _input = input if py_version == 3 else raw_input
 

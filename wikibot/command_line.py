@@ -2,28 +2,33 @@
 Command-line tools
 """
 
+import argparse
 import readline
 import sys
 
 import wikibot
 util = wikibot.util
 
-def parse_args(args=None):
-    if args is None:
-        args = sys.argv
-    flags = {}
-    for arg in args:
-        # Check for leading --
-        if not arg.startswith('--'):
-            continue
-        arg = arg[2:]
-        # Store in dictionary
-        if not '=' in arg:
-            flags[arg] = True
-        else:
-            k, v = arg.split('=', 1)
-            flags[k] = v
-    return flags
+class ArgNamespace(argparse.Namespace):
+    def __getitem__(self, *args):
+        return self.__getattribute__(*args)
+
+
+class ArgumentParser(argparse.ArgumentParser):
+    def parse_args(self, *args, **kwargs):
+        namespace = ArgNamespace()
+        args = super(ArgumentParser, self).parse_args(namespace=namespace, *args, **kwargs)
+        return args
+
+
+parser = ArgumentParser('(script)')
+parser.add_argument('--user', help='User', required=False)
+parser.add_argument('--no-color', help='Disable color', required=False,
+                    action='store_true')
+parser.add_argument('--debug', help='Enable debug mode', required=False,
+                    action='store_true')
+
+parse_args = parser.parse_args
 
 def get_user():
     help_str = """\
@@ -32,8 +37,8 @@ def get_user():
     o: One-time login (bypass saving)\
     """.replace('  ', '')
     args = parse_args()
-    if 'user' in args:
-        return wikibot.cred.load_user(args['user'])
+    if args.user:
+        return wikibot.cred.load_user(args.user)
     else:
         while 1:
             ident = wikibot.util.input('User ID (site:username), "?" for help: ')
