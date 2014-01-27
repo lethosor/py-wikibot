@@ -10,11 +10,11 @@ import sys
 import wikibot.util as util
 
 if util.py_version == 2:
-    import httplib
-    import urlparse
+    from httplib import HTTPConnection
+    from urlparse import urlparse
 elif util.py_version == 3:
-    import http.client as httplib
-    import urllib.parse as urlparse
+    from http.client import HTTPConnection
+    from urllib.parse import urlparse
 else:
     util.die('Unsupported python version:', util.py_version, type='fatal')
 
@@ -24,7 +24,7 @@ class Request:
             data = {}
         if not headers:
             headers = []
-        purl = urlparse.urlparse(url)  # Parsed URL
+        purl = urlparse(url)  # Parsed URL
         if purl.query:
             data.update(util.qs_decode(purl.query.lstrip('?')))
         
@@ -41,7 +41,7 @@ class Request:
             self.request()
     
     def request(self):
-        self.conn = httplib.HTTPConnection(self.host, self.port)
+        self.conn = HTTPConnection(self.host, self.port)
         query = util.qs_encode(self.data)
         self.post_data = ''
         if self.method == 'POST':
@@ -121,16 +121,10 @@ class CookieManager:
         Other headers are ignored.
         List format: [('set-cookie', 'cookie data')...] (not case-sensitive)
         """
-        
         for i in l:
             header, data = i
             if header.lower() != 'set-cookie':
                 continue
             cookie_name, cookie_value = data.split(';')[0].split('=', 1)
             self.cookies[cookie_name] = cookie_value
-        
-        
-    
-    
-    
 
