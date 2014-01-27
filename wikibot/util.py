@@ -33,6 +33,13 @@ if not sys.stdout.isatty() or '--no-color' in sys.argv:
     # Prevent coloring of output with  --no-color or if stdout is not a tty
     termcolor = None
 
+class UnsupportedPythonVersion(Exception):
+    def __init__(self, *args, **kwargs):
+        super(UnsupportedPythonVersion, self).__init__(*args)
+        log('Unsupported Python version (%s)' %
+            (kwargs['version'] if 'version' in kwargs else py_version),
+            type='fatal')
+
 
 class DynamicList(list):
     def __setitem__(self, i, v):

@@ -16,7 +16,7 @@ elif util.py_version == 3:
     from http.client import HTTPConnection
     from urllib.parse import urlparse
 else:
-    util.die('Unsupported python version:', util.py_version, type='fatal')
+    raise util.UnsupportedPythonVersion()
 
 class Request:
     def __init__(self, url, data=False, method="GET", headers=False, auto=True):
