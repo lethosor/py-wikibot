@@ -19,7 +19,7 @@ else:
     util.die('Unsupported python version:', util.py_version, type='fatal')
 
 class Request:
-    def __init__(self, url, data=False, method="GET", headers=False, auto=True, async=False, callback=None):
+    def __init__(self, url, data=False, method="GET", headers=False, auto=True):
         if not data:
             data = {}
         if not headers:
@@ -28,14 +28,8 @@ class Request:
         if purl.query:
             data.update(util.qs_decode(purl.query.lstrip('?')))
         
-        
         self.host, self.port, self.path, self.data, self.method, self.headers = \
             purl.hostname, purl.port, purl.path, data, method, headers
-        
-        self.async, self.callback = async, callback
-        
-        if async and callback is None:
-            raise TypeError('Asynchronous requests require a callback!')
         
         if auto:
             self.request()
@@ -51,45 +45,31 @@ class Request:
             self.path += '?' + query
         else:
             raise ValueError('Invalid method: "%s"' % self.method)
-
-        if not self.async:
-            self.fetch()
-        else:
-            # Fetch the request asynchronously
-            def fetch(*args):
-                util.log("Fetching")
-                self.fetch()
-            p = multiprocessing.Pool(1)
-            r = p.apply_async(fetch, [1], self.callback)
         
+        return self.fetch()
+
     def fetch(self):
         self.conn.putrequest(self.method, self.path)
         self.headers.append(('Content-Length', len(self.post_data)))
         sent_headers = []
+        # Make sure we don't accidentally send duplicate headers
         for i in self.headers:
-            try:
-                header, value = i
-                if header in sent_headers:
-                    continue
-                sent_headers.append(header)
-                self.conn.putheader(header, value)
-            except (TypeError, ValueError):
-                pass
+            header, value = i
+            if header in sent_headers:
+                # Don't send a header that's been sent already
+                continue
+            sent_headers.append(header)
+            self.conn.putheader(header, value)
         self.conn.endheaders()
-        # encode() is for python 3 - converts to ASCII
+        # encode() converts data to bytes, needed for Python 3
         self.conn.send(self.post_data.encode())
         self.response = self.conn.getresponse()
         self.response_text = self.response.read()
-        # Callback
-        if hasattr(self.callback, '__call__'):
-            self.callback(self)
     
     
 class CookieManager:
     def __init__(self):
         self.cookies = {}
-        self.get = self.__getitem__
-        self.set = self.__setitem__
     
     def __getitem__(self, key):
         if key in self.cookies:
@@ -101,6 +81,9 @@ class CookieManager:
         self.cookies[key] = val
         return val
     
+    get = __getitem__
+    set = __setitem__
+    
     def get_headers(self):
         """
         Returns a list containing a Cookie header for sending cookies, suitable
@@ -109,20 +92,21 @@ class CookieManager:
         The Cookie header can be created with:
         ': '.join(get_headers()[0])
         """
-        l = []
-        for i in self.cookies:
-            l.append(util.qs_encode({i: self.cookies[i]}))
-        return [("Cookie", "; ".join(l))]
+        cookies = []
+        for c in self.cookies:
+            cookies.append(util.qs_encode({c: self.cookies[c]}))
+        return [("Cookie", "; ".join(cookies))]
     
 
-    def set_from_headers(self, l):
+    def set_from_headers(self, headers):
         """
         Sets cookies using all set-cookie headers in the given list.
-        Other headers are ignored.
-        List format: [('set-cookie', 'cookie data')...] (not case-sensitive)
+        List format: [('set-cookie', 'cookie data')...]
+        
+        "Set-Cookie" is not case-sensitive. Other headers are ignored.
         """
-        for i in l:
-            header, data = i
+        for h in headers:
+            header, data = h
             if header.lower() != 'set-cookie':
                 continue
             cookie_name, cookie_value = data.split(';')[0].split('=', 1)
