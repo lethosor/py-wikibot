@@ -33,7 +33,7 @@ class CVars(dict):
             raise NameError()
 
 def main():
-    command_line.parser.add_argument('--modules', action='append',
+    command_line.parser.add_argument('-m', '--modules', action='append',
                                      help='Comma-separated list of modules to import')
     args = command_line.parse_args()
     util.log('Starting interactive wikibot shell...', type='info')
