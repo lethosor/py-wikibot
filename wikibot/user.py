@@ -63,7 +63,7 @@ class User:
             if val_2['result'] == 'Success':
                 util.log("Login as %s successful" % self.username, type="ok")
             else:
-                raise UserLoginError("Login as %s failed: %s" % (self.username, val_2['result']), type="error")
+                raise UserLoginError("Login as %s failed: %s" % (self.username, val_2['result']))
                 return False
         except api.ApiError as e:
             raise UserLoginError('Could not log in: %s' % e)
