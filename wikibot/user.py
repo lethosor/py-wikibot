@@ -106,6 +106,7 @@ class User:
                 util.debug('<blue>', str(a))
             except Exception:
                 util.debug('<yellow>Query not displayed')
+        kwargs['user'] = self.username
         cookie_headers = self.cookies.get_headers()
         if 'headers' in kwargs:
             kwargs['headers'].extend(cookie_headers)

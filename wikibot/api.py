@@ -210,10 +210,14 @@ class API:
 
 class APIRequest:
     def __init__(self, api, data={}, method='auto', auto=True, auto_filter=True,
-                 headers=None, query_continue=True):
+                 headers=None, query_continue=True, user="Unknown user"):
         data = util.dict_extend({'format':'json', 'action':'query'}, data)
         if data['action'] == 'query' and 'continue' not in data and query_continue:
             data['continue'] = ''
+        
+        if headers is None:
+            headers = []
+        headers.insert(0, ('User-Agent', 'py-wikibot/alpha (User: %s)' % user))
         
         self.api, self.data, self.method, self.enable_auto_filter, self.headers = \
             api, data, method, auto_filter, headers

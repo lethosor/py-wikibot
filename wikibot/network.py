@@ -60,6 +60,7 @@ class Request:
                 continue
             sent_headers.append(header)
             self.conn.putheader(header, value)
+            util.debug('<magenta,bold>%s: <magenta>%s' % (header, value))
         self.conn.endheaders()
         # encode() converts data to bytes, needed for Python 3
         self.conn.send(self.post_data.encode())
