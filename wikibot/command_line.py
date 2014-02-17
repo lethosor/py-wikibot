@@ -13,7 +13,6 @@ class ArgNamespace(argparse.Namespace):
     def __getitem__(self, *args):
         return self.__getattribute__(*args)
 
-
 class ArgumentParser(argparse.ArgumentParser):
     def parse_args(self, *args, **kwargs):
         namespace = ArgNamespace()
@@ -43,7 +42,7 @@ def get_user():
         while 1:
             ident = wikibot.util.input('User ID (site:username), "?" for help: ')
             if ident == 'a':
-                return
+                raise wikibot.user.UserLoginAborted
             elif ident == 'n':
                 user_id = create_new_user()
                 return wikibot.cred.load_user(user_id)
@@ -61,6 +60,8 @@ def get_user():
                     util.log('"{0}" is not a valid user ID!'.format(ident))
                 except AttributeError:
                     util.log('User data is incomplete!')
+                except wikibot.user.UserError:
+                    util.log('Could not log in as {0}'.format(ident), type='warn')
 
 def get_user_creds():
     util.log('Press Ctrl-C to abort user creation.')

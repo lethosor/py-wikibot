@@ -18,6 +18,11 @@ class UserLoginError(UserError):
     """ An error while logging in a user """
     pass
 
+class UserLoginAborted(UserError):
+    """ User login was aborted """
+    def __init__(self, msg='Login aborted', *args, **kwargs):
+        super(UserLoginAborted, self).__init__(msg, *args, **kwargs)
+
 class UserPermissionError(UserError):
     """ Indicates a lack of sufficient privileges """
     pass
@@ -130,4 +135,3 @@ class User:
     def get_page(self, page_name, *args, **kwargs):
         return api.Page(page_name, self, *args,**kwargs)
     
-
