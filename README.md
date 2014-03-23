@@ -1,16 +1,12 @@
 py-wikibot
 ==========
 
-MediaWiki bot framework in Python
-
-(Yes, I know the name is uncreative)
+MediaWiki bot framework in Python, with an uncreative name.
 
 Usage
 -----
-See the [wiki](https://github.com/lethosor/py-wikibot/wiki) for some documentation. Some examples (not always up-to-date) can be found in the wikibot_samples folder.
-
+See the [wiki](https://github.com/lethosor/py-wikibot/wiki) for some documentation. See [this repo](https://github.com/lethosor/LethosorBot-dfwiki) for working examples. Some out-of-date examples can also be found in the wikibot_samples folder.
 
 Contributing
 ------------
-Half of the code is poorly-commented and the other half is poorly-written (I'll clean it up eventually). Feel free to contribute if you can figure out what it does, though.
-
+Feel free to, as long as you can figure out what it does. Parts of it are better-documented than others. I hope to clean things up when I can. (Not that this isn't usable–I use it for nearly all of my bot tasks).
