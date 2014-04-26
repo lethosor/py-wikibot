@@ -13,7 +13,7 @@ import wikibot.bot
 import wikibot.command_line
 import wikibot.cred
 import wikibot.ui
-#import wikibot.user
+import wikibot.user
 import wikibot.util
 
 # Credentials
