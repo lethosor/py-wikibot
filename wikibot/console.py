@@ -34,14 +34,18 @@ class CVars(dict):
 
 def main():
     command_line.parser.add_argument('-m', '--modules', action='append',
-                                     help='Comma-separated list of modules to import')
+                        help='Comma-separated list of modules to import')
+    command_line.parser.add_argument('-v', '--verbose', action='store_true',
+                        help='List imported modules and other information')
     args = command_line.parse_args()
-    util.log('Starting interactive wikibot shell...', type='info')
+    if args.verbose:
+        util.log('Starting interactive wikibot shell...', type='info')
     
     c_vars = CVars()  # Console variables
     modules = ['sys', 'os', 're', 'wikibot', 'termcolor']
     for m in dir(wikibot):
-        if m not in modules and not m.startswith('__') and m != 'wikibot':
+        if m not in modules and not m.startswith('__') \
+        and m not in ('wikibot', 'absolute_import'):
             modules.append('wikibot.' + m)
     
     if args.modules:
@@ -71,12 +75,15 @@ def main():
         try:
             c_vars[name] = importlib.import_module(m)
             if m.endswith(name):
-                util.log('Imported module "%s"%s' % (m, ' as "%s"' % name if name != m else ''),
-                         type='progress')
+                if args.verbose:
+                    util.log('Imported module "%s"%s' %
+                        (m, ' as "%s"' % name if name != m else ''),
+                        type='progress')
             else:
                 util.log('Imported module "%s" as "%s": Scope conflict' % (m, name), type='warn')
         except (ImportError, ValueError, TypeError) as e:
-            util.log('Failed to import module "%s": %s' % (m, str(e)), type='error')
+            util.log('Failed to import module "%s": %s' % (m, str(e)),
+                         type='error')
     
     shell = code.InteractiveConsole(c_vars)
     try:
