@@ -18,8 +18,11 @@ if py_version == 2:
 else:
     import urllib.parse as urllib
 
-if py_version == 2:
-    str = unicode
+def to_str(s):
+    if py_version == 2:
+        return unicode(s).encode('utf-8')
+    else:
+        return str(s)
 
 try:
     import termcolor
@@ -64,7 +67,7 @@ _log_types = {
     'underline': 'underline',
 }
 def _log_parse(*args, **kwargs):
-    s = ' '.join([str(x) for x in args]) + '<>'
+    s = ' '.join([to_str(x) for x in args]) + '<>'
     if 'type' in kwargs and kwargs['type'] in _log_types:
         s = '<' + _log_types[kwargs['type']] + '>' + s
     if 'color' not in kwargs:
@@ -146,7 +149,7 @@ def get_file(prompt='File: ', exists=True, path=''):
     exists: True if file should exist (defaults to True)
     path: An initial path to use, returned if acceptable (optional)
     """
-    path = str(path)
+    path = to_str(path)
     while 1:
         if not path:
             path = input(prompt)
