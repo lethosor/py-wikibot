@@ -18,6 +18,9 @@ if py_version == 2:
 else:
     import urllib.parse as urllib
 
+if py_version == 2:
+    str = unicode
+
 try:
     import termcolor
     if sys.platform == 'win32':
